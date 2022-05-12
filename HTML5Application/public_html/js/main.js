@@ -118,8 +118,17 @@ async function walletDisconnect() {
     
     fetchAccountData();
 }
+if (window.ethereum && window.ethereum.isMetaMask) {
+    // metamask is installed
+    
+    main();
+} else {
+    $("#navbar .jsOnline, #navbar .jsOffline").hide();
+    $("#navbar .jsMetamaskMissed").show();
+    
+}
 
-main();
+
 
 $("#navbar .jsWalletConnect").off("click").on("click", function(e) {
     e.preventDefault;
