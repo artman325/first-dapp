@@ -35,14 +35,7 @@
         <div class="container">
           
             <div class="navbar-header">
-                <!--
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar">page#1</span>
-                <span class="icon-bar">page#2</span>
-                <span class="icon-bar">page#3</span>
-                </button>
-                -->
+                
                 <a class="navbar-brand" href="#">Project name</a>
             </div>
           
@@ -85,7 +78,86 @@
     </div>
 
     <div class="container">
-      <!-- Example row of columns -->
+        
+        <ul class="nav nav-tabs">
+            <li><a href="#tabA" data-toggle="tab">AdminPage</a></li>
+            <li><a href="#tabB" data-toggle="tab">lorem ipsum</a></li>
+            <li><a href="#tabC" data-toggle="tab">Dolor sit</a></li>
+        </ul>
+        <div class="tab-content" id="tabs">
+            <div class="tab-pane" id="tabA">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="adminPageContainer marginTop20">
+                            <div class="form-group">
+                              <label for="AdminPage-selectTemlate">Contract</label>
+                              <select id="AdminPage-selectTemlate" class="form-control">
+                                <option value="pleasechoose">-please choose-</option>
+                                <option value="CommunityCoin">CommunityCoin</option>
+                                <option value="CommunityStakingPoolFactory">CommunityStakingPoolFactory</option>
+                                <option value="CommunityStakingPool">CommunityStakingPool</option>
+                                <option value="CommunityStakingPoolErc20">CommunityStakingPoolErc20</option>
+                                <option value="CommunityRolesManagement">CommunityRolesManagement</option>
+                              </select>
+                            </div>
+                            <div class="AdminPage-templateContent AdminPage-pleasechoose">
+                                
+                                <div class="text-center">please choose template in select above</div>
+
+                            </div>
+                            
+                            
+                            <div class="AdminPage-templateContent AdminPage-CommunityCoin">
+                                <div class="text-center">there are no params    </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                            <div class="AdminPage-templateContent AdminPage-CommunityStakingPoolFactory">
+                                <div class="text-center">there are no params    </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                            <div class="AdminPage-templateContent AdminPage-CommunityStakingPool">
+                                <div class="text-center">there are no params    </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                            <div class="AdminPage-templateContent AdminPage-CommunityStakingPoolErc20">
+                                <div class="text-center">there are no params    </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                            <div class="AdminPage-templateContent AdminPage-CommunityRolesManagement">
+                                <div class="text-center">there are no params    </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                            
+<!--                            
+                            <div class="form-group">
+                              <label for="exampleInputPassword1">Password</label>
+                              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                            </div>
+                            <div class="form-check">
+                              <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                              <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                            </div>-->
+                            
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        
+                        <h2>Deployed list <a id="JsDeployedListRefresh" href="javascript:void(0)">[refresh]</a></h2>
+                        <div id="adminTabDeployedList">
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+            </div>
+            <div class="tab-pane" id="tabB">in development</div>
+            <div class="tab-pane" id="tabC">in development</div>
+        </div>
+       
+        
+        
+      <!-- Example row of columns 
       <div class="row">
         <div class="col-md-4">
           <h2>Heading</h2>
@@ -103,11 +175,11 @@
           <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
         </div>
       </div>
-
+-->
       <hr>
 
       <footer>
-        <p>&copy; Company 2022</p>
+        <p>&copy; Intercoin 2022</p>
       </footer>
     </div> <!-- /container -->        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
@@ -115,6 +187,9 @@
         <script src="js/vendor/bootstrap.min.js"></script>
 
         <script src="js/main.js"></script>
+        <script src="js/tabs.js"></script>
+        <script src="js/admin-tab.js"></script>
+        
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>
