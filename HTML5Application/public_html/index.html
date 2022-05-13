@@ -80,18 +80,19 @@
     <div class="container">
         
         <ul class="nav nav-tabs">
-            <li><a href="#tabA" data-toggle="tab">AdminPage</a></li>
-            <li><a href="#tabB" data-toggle="tab">lorem ipsum</a></li>
-            <li><a href="#tabC" data-toggle="tab">Dolor sit</a></li>
+            <li><a href="#tabAdminPage" data-toggle="tab">AdminPage</a></li>
+            <li><a href="#tabFactories" data-toggle="tab">Factories</a></li>
+            <li><a href="#tabPools" data-toggle="tab">Pools</a></li>
+            <li><a href="#tabUsers" data-toggle="tab">Users</a></li>
         </ul>
         <div class="tab-content" id="tabs">
-            <div class="tab-pane" id="tabA">
+            <div class="tab-pane" id="tabAdminPage">
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="adminPageContainer marginTop20">
-                            <div class="form-group">
-                              <label for="AdminPage-selectTemlate">Contract</label>
-                              <select id="AdminPage-selectTemlate" class="form-control">
+                        <div class="marginTop20">
+                            <div class="form-group marginBottom40">
+                              <label for="AdminPage-selectTemplate">Contract</label>
+                              <select id="AdminPage-selectTemplate" class="selectTemplate form-control">
                                 <option value="pleasechoose">-please choose-</option>
                                 <option value="CommunityCoin">CommunityCoin</option>
                                 <option value="CommunityStakingPoolFactory">CommunityStakingPoolFactory</option>
@@ -100,63 +101,146 @@
                                 <option value="CommunityRolesManagement">CommunityRolesManagement</option>
                               </select>
                             </div>
-                            <div class="AdminPage-templateContent AdminPage-pleasechoose">
-                                
+                            <div class="tab-templateContent tab-pleasechoose">
                                 <div class="text-center">please choose template in select above</div>
-
                             </div>
-                            
-                            
-                            <div class="AdminPage-templateContent AdminPage-CommunityCoin">
+                            <div class="tab-templateContent tab-CommunityCoin">
                                 <div class="text-center">there are no params    </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-                            <div class="AdminPage-templateContent AdminPage-CommunityStakingPoolFactory">
+                            <div class="tab-templateContent tab-CommunityStakingPoolFactory">
                                 <div class="text-center">there are no params    </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-                            <div class="AdminPage-templateContent AdminPage-CommunityStakingPool">
+                            <div class="tab-templateContent tab-CommunityStakingPool">
                                 <div class="text-center">there are no params    </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-                            <div class="AdminPage-templateContent AdminPage-CommunityStakingPoolErc20">
+                            <div class="tab-templateContent tab-CommunityStakingPoolErc20">
                                 <div class="text-center">there are no params    </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-                            <div class="AdminPage-templateContent AdminPage-CommunityRolesManagement">
+                            <div class="tab-templateContent tab-CommunityRolesManagement">
                                 <div class="text-center">there are no params    </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
-                            
-<!--                            
-                            <div class="form-group">
-                              <label for="exampleInputPassword1">Password</label>
-                              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                            </div>
-                            <div class="form-check">
-                              <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                              <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                            </div>-->
-                            
                         </div>
                     </div>
                     <div class="col-md-6">
-                        
                         <h3>
                             Deployed list 
-                            <a id="JsDeployedListRefresh" href="javascript:void(0)"><span class="glyphicon glyphicon-refresh"></span></a>
-                            <a id="JsDeployedListTrash" href="javascript:void(0)"><span class="glyphicon glyphicon-trash"></span></a>
+                            <a class="jsDeployedListRefresh" href="javascript:void(0)"><span class="glyphicon glyphicon-refresh"></span></a>
+                            <a class="jsDeployedListTrash" href="javascript:void(0)"><span class="glyphicon glyphicon-trash"></span></a>
                         </h3>
-                        <div id="adminTabDeployedList">
-                            
+                        <div class="jsDeployedList">
                         </div>
-                        
                     </div>
                 </div>
-                
             </div>
-            <div class="tab-pane" id="tabB">in development</div>
-            <div class="tab-pane" id="tabC">in development</div>
+            <div class="tab-pane" id="tabFactories">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="marginTop20">
+                            <div class="form-group marginBottom40">
+                              <label for="FactoriesPage-selectTemplate">Contract</label>
+                              <select id="FactoriesPage-selectTemplate" class="selectTemplate form-control">
+                                <option value="pleasechoose">-please choose-</option>
+                                <option value="CommunityCoinFactory">CommunityCoinFactory</option>
+                              </select>
+                            </div>
+                            <div class="tab-templateContent tab-pleasechoose">
+                                <div class="text-center">please choose template in select above</div>
+                            </div>
+                            <div class="tab-templateContent tab-CommunityCoinFactory">
+                                
+                                <form>
+                                    <div class="form-group">
+                                        <label for="tabFactoriesCommunityCoinImpl">CommunityCoin address</label>
+                                        <input type="text" class="form-control jsCommunityCoinImpl" id="tabFactoriesCommunityCoinImpl" placeholder="address">
+                                        <!--
+                                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                                        -->
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabFactoriesCommunityStakingPoolFactoryImpl">communityStakingPoolFactory address</label>
+                                        <input type="text" class="form-control jsCommunityStakingPoolFactoryImpl" id="tabFactoriesCommunityStakingPoolFactoryImpl" placeholder="address">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabFactoriesStakingPoolImpl">communityStakingPool address</label>
+                                        <input type="text" class="form-control jsStakingPoolImpl" id="tabFactoriesStakingPoolImpl" placeholder="address">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabFactoriesStakingPoolImplErc20">communityStakingPoolErc20 address</label>
+                                        <input type="text" class="form-control jsStakingPoolImplErc20" id="tabFactoriesStakingPoolImplErc20" placeholder="address">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabFactoriesRolesManagementImpl">communityRolesManagement address</label>
+                                        <input type="text" class="form-control jsRolesManagementImpl" id="tabFactoriesRolesManagementImpl" placeholder="address">
+                                    </div>
+                                  <a href="javascript:void(0)" class="jsPopulate">[populate from storage]</a>
+                                  <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                                
+                            </div>
+                            
+                            <div class="tab-templateContent tab-CommunityCoinFactory-methods-produce">
+                                <form>
+                                    <div class="marginBottom40">
+                                        <h3>Produce pool</h3>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabFactoriesHook">Hook address</label>
+                                        <input type="text" class="form-control jsHook" id="tabFactoriesHook" placeholder="address">
+                                        <small class="form-text text-muted">Hook address. May be RewardContract. <a href="javascript:fillZeroAddress('#tabFactoriesHook')">fill address(0)</a></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabFactoriesDiscountSensitivity">Discount sensitivity</label>
+                                        <input type="text" class="form-control jsDiscountSensitivity" id="tabFactoriesDiscountSensitivity" placeholder="discount">
+<!--                                        <small class="form-text text-muted"></small>-->
+                                    </div>
+                                    
+                                    <label for="basic-url">Community Settings</label>
+                                    <div style="margin:0 10px;">
+                                        <div class="form-group">
+                                            <label for="tabFactoriesCommunityAddress">address</label>
+                                            <input type="text" class="form-control jsCommunityAddress" id="tabFactoriesCommunityAddress" placeholder="address">
+                                            <small class="form-text text-muted"><a href="javascript:fillZeroAddress('#tabFactoriesCommunityAddress')">fill address(0)</a></small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tabFactoriesCommunityAdminRole">admin's role</label>
+                                            <input type="text" class="form-control jsCommunityAdminRole" id="tabFactoriesCommunityAdminRole" placeholder="string">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tabFactoriesCommunityRedeemRole">redeem's role</label>
+                                            <input type="text" class="form-control jsCommunityRedeemRole" id="tabFactoriesCommunityRedeemRole" placeholder="string">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tabFactoriesCommunityCirculationRole">circulation's role</label>
+                                            <input type="text" class="form-control jsCommunityCirculationRole" id="tabFactoriesCommunityCirculationRole" placeholder="string">
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    <button type="submit" class="btn btn-primary">Submit</button>    
+                                </form>
+                               
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>
+                            Deployed list 
+                            <a class="jsDeployedListRefresh" href="javascript:void(0)"><span class="glyphicon glyphicon-refresh"></span></a>
+                            <a class="jsDeployedListTrash" href="javascript:void(0)"><span class="glyphicon glyphicon-trash"></span></a>
+                        </h3>
+                        <div class="jsDeployedList">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="tabPools">in development</div>
+            <div class="tab-pane" id="tabUsers">in development</div>
         </div>
        
         
@@ -189,10 +273,13 @@
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
 
         <script src="js/vendor/bootstrap.min.js"></script>
-
+        
         <script src="js/main.js"></script>
+        <script src="js/utils.js"></script>
+        
         <script src="js/tabs.js"></script>
         <script src="js/admin-tab.js"></script>
+        <script src="js/factories-tab.js"></script>
         
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->

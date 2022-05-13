@@ -128,8 +128,6 @@ if (window.ethereum && window.ethereum.isMetaMask) {
     
 }
 
-
-
 $("#navbar .jsWalletConnect").off("click").on("click", function(e) {
     e.preventDefault;
     
@@ -146,76 +144,3 @@ $("#navbar .jsWalletDisconnect").off("click").on("click", function(e) {
     e.preventDefault;
     walletDisconnect();
 });
-
-
-class ContractStorage {
-    
-    constructor(key) {
-        this.key = key;
-    }
-    
-    clear() {
-        localStorage.setItem(this.key, JSON.stringify([]));
-    }
-
-    getList() {
-        let list = localStorage.getItem(this.key);
-        list = (typeof(list) === 'undefined' || list == null) ? [] : JSON.parse(list);
-        return list;
-    }
-    
-    setItem(name, address) {
-        let list = this.getList();
-        let index=null;
-        for (let i=0; i<list.length; i++) {
-            
-            if (list[i].name == name) {
-                index = i;
-            }
-        }
-        if (index==null) {
-            list.push({
-                name: name,
-                address: address
-            });
-        } else {
-            list[index].name=name;
-            list[index].address=address;
-        }
-
-        
-
-        
-        localStorage.setItem(this.key, JSON.stringify(list));
-    
-    }
-    
-    itemExists(name) {
-        let list = this.getList();
-        for (let item of list) {
-            if (item.name == name) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    writeHtml(jsContainerId) {
-        let list = this.getList();
-
-        $('#'+jsContainerId).html('<table class="table"><tbody></tbody></table>');
-    
-        //Try to get tbody first with jquery children. works faster!
-        var tbody = $('#'+jsContainerId+' table').children('tbody');
-    
-        if (list.length>0) {
-            for (let item of list) {
-                tbody.append('<tr><th>'+item.name+'</th><th>'+item.address+'</th></tr>');
-            }
-        } else {
-            tbody.append('<tr><th>There are no data</th></tr>');
-        }
-    }
-    
-  
-}

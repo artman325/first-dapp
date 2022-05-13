@@ -1,30 +1,34 @@
-var implementationStorageObj = new ContractStorage("deployedImplementations");
+(function(){
+var contractStorageObj = new ContractStorage(
+    "deployedImplementations",
+    $("#tabAdminPage .jsDeployedList")
+);
 
-$("#JsDeployedListRefresh").off("click").on("click", function(){
-    implementationStorageObj.writeHtml("adminTabDeployedList");
+$("#tabAdminPage .jsDeployedListRefresh").off("click").on("click", function(){
+    contractStorageObj.writeHtml();
     //refreshDeployedImplementations();
 });
-$("#JsDeployedListTrash").off("click").on("click", function(){
+$("#tabAdminPage .jsDeployedListTrash").off("click").on("click", function(){
     if (window.confirm("Are you sure to clear list?")) {
-        implementationStorageObj.clear();
-        implementationStorageObj.writeHtml("adminTabDeployedList");
+        contractStorageObj.clear();
+        contractStorageObj.writeHtml();
     }
     
 });
 
-$("#AdminPage-selectTemlate").off("change").on("change", function(){
-    $(".AdminPage-templateContent").hide();
-    $(".AdminPage-"+this.value).show();
+$("#tabAdminPage .selectTemplate").off("change").on("change", function(){
+    $("#tabAdminPage .tab-templateContent").hide();
+    $("#tabAdminPage .tab-"+this.value).show();
      
 }).trigger('change');
 
-$('.adminPageContainer button').off("click").on("click", function(e){
+$('#tabAdminPage .tab-templateContent button').off("click").on("click", function(e){
     e.preventDefault();
     
     
     if (provider.selectedAddress != null) {
-        let option = $("#AdminPage-selectTemlate").val();
-        let itemExists = implementationStorageObj.itemExists(option);
+        let option = $("#tabAdminPage .selectTemplate").val();
+        let itemExists = contractStorageObj.itemExists(option);
         if (!itemExists || (itemExists && window.confirm("impementation already deployed. are you sure to replace exists?"))) {
 
 
@@ -45,10 +49,10 @@ $('.adminPageContainer button').off("click").on("click", function(e){
                     // Deploy an instance of the contract
                     contract = await factory.deploy();
 
-                    implementationStorageObj.setItem(option, contract.address);
+                    contractStorageObj.setItem(option, contract.address, provider.selectedAddress);
                     //saveImplementation(option, contract.address);
                     fetchAccountData();
-                    implementationStorageObj.writeHtml("adminTabDeployedList");
+                    contractStorageObj.refresh();
                     //refreshDeployedImplementations();
     //                console.log(provider.selectedAddress);
     //                const signer = await ethers.provider.getSigner(provider.selectedAddress)
@@ -59,9 +63,12 @@ $('.adminPageContainer button').off("click").on("click", function(e){
     }
 });
 
-implementationStorageObj.writeHtml("adminTabDeployedList");
+
+contractStorageObj.refresh();
 //refreshDeployedImplementations();
   // outputs the content of the text file
 
 //saveImplementation("lorem", 0x123);
 //saveImplementation("dolor", 0x456);
+
+})();
