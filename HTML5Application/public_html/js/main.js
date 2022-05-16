@@ -1,5 +1,39 @@
 
+
+function chainConstantsSetup(chainId) {
+    console.log(chainId);
+    const t = {
+        "0x1": {
+            uniswapRouter: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+            uniswapRouterFactory: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+            weth: "0xc778417E063141139Fce010982780140Aa0cD5Ab"
+        }, 
+        "0x3": {
+            uniswapRouter: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+            uniswapRouterFactory: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+            weth: "0xc778417E063141139Fce010982780140Aa0cD5Ab"
+        }, 
+        "0x4": {
+            uniswapRouter: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+            uniswapRouterFactory: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+            weth: "0xc778417E063141139Fce010982780140Aa0cD5Ab"
+        }
+        
+    };
+    
+    if (chainId == '0x539') {
+        chainId = '0x4';
+    }
+
+    if (typeof(t[chainId]) === "undefined") {
+        console.log("unsupported chain");
+    }
+    return t[chainId];
+}
+   
+   
 var provider;
+var chainConstants;
 
 async function main() {
     
@@ -25,11 +59,14 @@ async function subscribeHandlers(provider) {
     // Subscribe to chainId change
     provider.on("chainChanged", (chainId) => {
         console.log("handle:chainChanged");
+        chainConstants = chainConstantsSetup(chainId);
         fetchAccountData();
     });
 
     provider.on("connect", (networkId) => {
         console.log("handle:connect");
+        chainConstants = chainConstantsSetup(networkId.chainId);
+        
         fetchAccountData();
     });
     provider.on("disconnect", (networkId) => {

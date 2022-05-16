@@ -92,3 +92,10 @@ class ContractStorage {
 function fillZeroAddress(id) {
     $(id).val('0x0000000000000000000000000000000000000000');
 }
+function fillFromStorage(id, key, name, attr) {
+    let st = new ContractStorage(key);
+    if (st.itemExists(name)) {
+        let t = st.getItem(name);
+        $(id).val(t[attr]);
+    }
+}

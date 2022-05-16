@@ -25,7 +25,6 @@ $("#tabAdminPage .selectTemplate").off("change").on("change", function(){
 $('#tabAdminPage .tab-templateContent button').off("click").on("click", function(e){
     e.preventDefault();
     
-    
     if (provider.selectedAddress != null) {
         let option = $("#tabAdminPage .selectTemplate").val();
         let itemExists = contractStorageObj.itemExists(option);
@@ -43,13 +42,90 @@ $('#tabAdminPage .tab-templateContent button').off("click").on("click", function
                     // get a signer wallet!
                     const signer = web3provider.getSigner();
 
-                    // The factory we use for deploying contracts
-                    factory = new ethers.ContractFactory(abi, bytecode, signer)
-
+                    
+                    
+                    
+                    
                     // Deploy an instance of the contract
-                    contract = await factory.deploy();
+                    if ((["UniswapV2Factory", "UniswapV2Router02"]).indexOf(option) === -1) {
+                        
+                        // The factory we use for deploying contracts
+                        factory = new ethers.ContractFactory(abi, bytecode, signer)
+                        let p = [];
+                        if (option == "TestITRc") {
+                            p.push('ITRc for Testing');
+                            p.push('TITRc');
+                            contract = await factory.deploy(...p);
+                        } else {
+                            contract = await factory.deploy();
+                        }
+                        
+                        contractStorageObj.setItem(option, contract.address, provider.selectedAddress);
+                    } else {
+                        // or attach exists and call method 
+                        if (option == 'UniswapV2Factory') {
+                            
+                            const contract = new ethers.Contract(chainConstants['uniswapRouter'], abi, signer);    
+                            console.log('111111111111111111111111');
+                            console.log(abi);
+                            
+                            console.log(await contract.allPairsLength());
+                            await contract.createPair(
+                                ($("#tabAdminPairTokenA").val()).trim(),
+                                ($("#tabAdminPairTokenB").val()).trim()
+                            );
+                        } else if (option == 'UniswapV2Router02') {
+                            const contract = new ethers.Contract(chainConstants['uniswapRouterFactory'], abi, signer);    
+                            
+                            let token = $("#tabAdminAddLiquidityTokenA").val();
+                            let amountTokenDesired = $("#tabAdminAddLiquidityTokenAAmount").val();
+                            let amountTokenMin = 0;
+                            let amountETHMin = 0;
+                            let to = provider.selectedAddress;
+                            let deadline = parseInt(Math.floor(Date.now()/1000))+parseInt(30*24*60*60); // 30 days
+                            let ethAmount = $("#tabAdminAddLiquidityTokenAAmount").val();
+                            
+                            let tmp = contractStorageObj.getItem('TITRc');
+                            if (tmp.address && tmp == token) {
+                                fetch('artifacts/TestTITRc.json')
+                                    .then(response => response.text())
+                                    .then( async function(text){
+                                        text = JSON.parse(text);
+                                        let abi = text.abi;
+                                        
+                                        const titrc = new ethers.Contract(token, text.abi, signer);  
+                                        await titrc.mint(signer.address, amountTokenDesired);
+                                        await titrc.approve(contract.address, amountTokenDesired);
+                                        
+                                    });
+                                
+                            }
+                            
+                            
+                            let tx = await contract.addLiquidityETH(
+                                token,
+                                amountTokenDesired,
+                                amountTokenMin,
+                                amountETHMin,
+                                to,
+                                deadline,
+                                {value: ethAmount}
+                            );
+     
+                        }
 
-                    contractStorageObj.setItem(option, contract.address, provider.selectedAddress);
+
+//                        let rc = await tx.wait(); // 0ms, as tx is already confirmed
+//                        let event = rc.events.find(event => event.event === 'InstanceCreated');
+//                        let instance, instancesCount;
+//                        [instance, instancesCount] = event.args;
+//
+//                        contractStorageObj.setItem("CommunityCoin", instance, provider.selectedAddress);
+
+
+                    }
+          
+                    
                     //saveImplementation(option, contract.address);
                     fetchAccountData();
                     contractStorageObj.refresh();

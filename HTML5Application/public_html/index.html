@@ -86,6 +86,7 @@
             <li><a href="#tabUsers" data-toggle="tab">Users</a></li>
         </ul>
         <div class="tab-content" id="tabs">
+            <!-- tabAdminPage -->
             <div class="tab-pane" id="tabAdminPage">
                 <div class="row">
                     <div class="col-md-6">
@@ -99,6 +100,9 @@
                                 <option value="CommunityStakingPool">CommunityStakingPool</option>
                                 <option value="CommunityStakingPoolErc20">CommunityStakingPoolErc20</option>
                                 <option value="CommunityRolesManagement">CommunityRolesManagement</option>
+                                <option value="TestITRc">ITRc for testing</option>
+                                <option value="UniswapV2Factory">Uniswap: Create Pair</option>
+                                <option value="UniswapV2Router02">Uniswap: Add liquidityETH</option>
                               </select>
                             </div>
                             <div class="tab-templateContent tab-pleasechoose">
@@ -124,6 +128,56 @@
                                 <div class="text-center">there are no params    </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
+                            <div class="tab-templateContent tab-TestITRc">
+                                <form>
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control" disabled value="TestITRc">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Symbol</label>
+                                        <input type="text" class="form-control" disabled value="TITRc">
+                                    </div>
+                                    <div class="form-group">
+                                        There is ERC20 contract for tests with method <b>mint</b> available for everyone
+                                    </div>
+                                </form>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                            <div class="tab-templateContent tab-UniswapV2Factory">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="tabAdminPairTokenA">tokenA address</label>
+                                        <input type="text" class="form-control jsAdminPairTokenA" id="tabAdminPairTokenA" placeholder="address">
+                                        <small class="form-text text-muted"><a href="javascript:fillFromStorage('#tabAdminPairTokenA', 'deployedImplementations', 'TestITRc', 'address')">fill TITRc address if deployed before</a></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabAdminPairTokenB">tokenB address</label>
+                                        <input type="text" class="form-control jsAdminPairTokenB" id="tabAdminPairTokenB" placeholder="address">
+                                        <small class="form-text text-muted"><a href="javascript:$('#tabAdminPairTokenB').val(chainConstants['weth']);">fill WETH address</a></small>
+                                    </div>
+                                </form>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                            <div class="tab-templateContent tab-UniswapV2Router02">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="tabAdminAddLiquidityTokenA">tokenA address</label>
+                                        <input type="text" class="form-control jsAdminAddLiquidityTokenA" id="tabAdminAddLiquidityTokenA" placeholder="address">
+                                        <small class="form-text text-muted"><a href="javascript:fillFromStorage('#tabAdminAddLiquidityTokenA', 'deployedImplementations', 'TestITRc', 'address')">fill TITRc address if deployed before</a></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabAdminAddLiquidityTokenAAmount">tokenA amount</label>
+                                        <input type="text" class="form-control jsAdminAddLiquidityTokenAAmount" id="tabAdminAddLiquidityTokenAAmount" placeholder="address">
+                                        <small class="form-text text-muted">if tokenA is TITRc address, we will mint amount and `approve` automatically.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabAdminAddLiquidityETHAmount">ETH amount</label>
+                                        <input type="text" class="form-control jsAdminAddLiquidityETHAmount" id="tabAdminAddLiquidityETHAmount" placeholder="address">
+                                    </div>
+                                </form>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -137,6 +191,7 @@
                     </div>
                 </div>
             </div>
+            <!-- tabFactories -->
             <div class="tab-pane" id="tabFactories">
                 <div class="row">
                     <div class="col-md-6">
@@ -186,7 +241,7 @@
                             <div class="tab-templateContent tab-CommunityCoinFactory-methods-produce">
                                 <form>
                                     <div class="marginBottom40">
-                                        <h3>Produce pool</h3>
+                                        <h3>Produce CommunityCoin</h3>
                                     </div>
                                     <div class="form-group">
                                         <label for="tabFactoriesHook">Hook address</label>
@@ -239,8 +294,88 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane" id="tabPools">in development</div>
-            <div class="tab-pane" id="tabUsers">in development</div>
+            <!-- tabPools -->
+            <div class="tab-pane" id="tabPools">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="marginTop20">
+                            <div class="form-group marginBottom40">
+                              <label for="Pools-selectTemplate">Contract</label>
+                              <select id="Pools-selectTemplate" class="selectTemplate form-control">
+                                <option value="pleasechoose">-please choose-</option>
+                                <option value="produce-simple">produce(simple)</option>
+                                <option value="produce">produce</option>
+                              </select>
+                            </div>
+                            <div class="tab-templateContent tab-pleasechoose">
+                                <div class="text-center">please choose template in select above</div>
+                            </div>
+                            <div class="tab-templateContent tab-produce-simple">
+                                
+                                <form>
+                                    <div class="marginBottom40">
+                                        <h3>Produce Pool</h3>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsReserveToken">ReserveToken address</label>
+                                        <input type="text" class="form-control jsPoolsReserveToken" id="tabPoolsReserveToken" placeholder="address">
+                                        <small class="form-text text-muted">
+                                            reserveToken address of reserve token. like a WETH, USDT,USDC, etc.
+                                            <a href="javascript:fillFromStorage('#tabPoolsReserveToken', 'deployedImplementations', 'TITRc', 'address')">fill WETH address</a>
+                                        </small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsTradedToken">TradedToken address</label>
+                                        <input type="text" class="form-control jsPoolsTradedToken" id="tabPoolsTradedToken" placeholder="address">
+                                        <small class="form-text text-muted">
+                                            tradedToken address of traded token. usual it intercoin investor token
+                                            <a href="javascript:fillFromStorage('#tabPoolsTradedToken', 'deployedImplementations', 'TITRc', 'address')">fill TITRc address if deployed before</a>
+                                        </small>
+                                    </div>
+                                    
+                                    <label for="basic-url">Community Settings</label>
+                                    <div style="margin:0 10px;">
+                                        <div class="form-group">
+                                            <label for="tabFactoriesCommunityAddress">address</label>
+                                            <input type="text" class="form-control jsCommunityAddress" id="tabFactoriesCommunityAddress" placeholder="address">
+                                            <small class="form-text text-muted"><a href="javascript:fillZeroAddress('#tabFactoriesCommunityAddress')">fill address(0)</a></small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tabFactoriesCommunityAdminRole">admin's role</label>
+                                            <input type="text" class="form-control jsCommunityAdminRole" id="tabFactoriesCommunityAdminRole" placeholder="string">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tabFactoriesCommunityRedeemRole">redeem's role</label>
+                                            <input type="text" class="form-control jsCommunityRedeemRole" id="tabFactoriesCommunityRedeemRole" placeholder="string">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tabFactoriesCommunityCirculationRole">circulation's role</label>
+                                            <input type="text" class="form-control jsCommunityCirculationRole" id="tabFactoriesCommunityCirculationRole" placeholder="string">
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    <button type="submit" class="btn btn-primary">Submit</button>    
+                                </form>
+                                
+                            </div>
+                            <div class="tab-templateContent tab-produce">
+                                <div class="text-center">please choose template in select above</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>
+                            Deployed list 
+                            <a class="jsDeployedListRefresh" href="javascript:void(0)"><span class="glyphicon glyphicon-refresh"></span></a>
+                            <a class="jsDeployedListTrash" href="javascript:void(0)"><span class="glyphicon glyphicon-trash"></span></a>
+                        </h3>
+                        <div class="jsDeployedList">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
        
         
@@ -274,8 +409,9 @@
 
         <script src="js/vendor/bootstrap.min.js"></script>
         
-        <script src="js/main.js"></script>
         <script src="js/utils.js"></script>
+        
+        <script src="js/main.js"></script>
         
         <script src="js/tabs.js"></script>
         <script src="js/admin-tab.js"></script>
