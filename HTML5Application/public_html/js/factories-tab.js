@@ -90,7 +90,7 @@ $('#tabFactories .tab-CommunityCoinFactory button').off("click").on("click", fun
                         contract = await factory.deploy();
                     }
 
-                    contractStorageObj.setItem(option, contract.address, provider.selectedAddress);
+                    contractStorageObj.setItem(option, option, contract.address, provider.selectedAddress);
                     //saveImplementation(option, contract.address);
                     fetchAccountData();
                     contractStorageObj.refresh();
@@ -147,7 +147,7 @@ $('#tabFactories .tab-CommunityCoinFactory-methods-produce button').off("click")
                         let instance, instancesCount;
                         [instance, instancesCount] = event.args;
 
-                        contractStorageObj.setItem("CommunityCoin", instance, provider.selectedAddress);
+                        contractStorageObj.setItem("CommunityCoin", "CommunityCoin", instance, provider.selectedAddress);
 
 
                         fetchAccountData();

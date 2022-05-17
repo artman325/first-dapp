@@ -33,7 +33,8 @@ class ContractStorage {
         };
 
     }
-    setItem(name, address, creator) {
+    setItem(name, title, address, creator) {
+        
         let list = this.getList();
         let index=null;
         for (let i=0; i<list.length; i++) {
@@ -45,11 +46,13 @@ class ContractStorage {
         if (index==null) {
             list.push({
                 name: name,
+                title: title,
                 address: address, 
                 creator: creator
             });
         } else {
             list[index].name=name;
+            list[index].title=title;
             list[index].address=address;
         }
         
@@ -78,7 +81,7 @@ class ContractStorage {
     
         if (list.length>0) {
             for (let item of list) {
-                tbody.append('<tr><th>'+item.name+'</th><th>'+item.address+'</th></tr>');
+                tbody.append('<tr><th>'+item.title+'</th><th>'+item.address+'</th></tr>');
             }
         } else {
             tbody.append('<tr><th>There are no data</th></tr>');
