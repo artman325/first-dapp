@@ -91,7 +91,7 @@ await q.createPair(
                             let instance;
                             [,,instance,] = event.args;
                     
-                            contractStorageObj.setItem(option, "UniswapPair", instance, provider.selectedAddress);
+                            contractStorageObj.setItem(option, "UniswapPair TestITRc-WETH", instance, provider.selectedAddress);
                     
                         } else if (option == 'UniswapV2Router02') {
                             contract = new ethers.Contract(chainConstants['uniswapRouter'], abi, signer);    

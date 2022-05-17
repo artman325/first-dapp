@@ -1,7 +1,7 @@
 
 
 function chainConstantsSetup(chainId) {
-    console.log(chainId);
+    
     const t = {
         "0x1": {
             uniswapRouter: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
@@ -34,9 +34,10 @@ function chainConstantsSetup(chainId) {
    
 var provider;
 var chainConstants;
+var balances;
 
 async function main() {
-    
+    balances = new BalancesBlock();
     provider = await detectEthereumProvider();
     if (provider) {
     //    await provider.send("eth_requestAccounts", []);
@@ -53,24 +54,29 @@ async function subscribeHandlers(provider) {
     provider.on("accountsChanged", (accounts) => {
         console.log("handle:accountsChanged");
         console.log(provider);
+        balances.changedProvider(provider);
         fetchAccountData();
     });
 
     // Subscribe to chainId change
     provider.on("chainChanged", (chainId) => {
         console.log("handle:chainChanged");
+        
+        balances.changedProvider(provider);
         chainConstants = chainConstantsSetup(chainId);
         fetchAccountData();
     });
 
     provider.on("connect", (networkId) => {
         console.log("handle:connect");
+        balances.changedProvider(provider);
         chainConstants = chainConstantsSetup(networkId.chainId);
         
         fetchAccountData();
     });
     provider.on("disconnect", (networkId) => {
         console.log("handle:disconnect");
+        balances.changedProvider(null);
         fetchAccountData();
         
     });

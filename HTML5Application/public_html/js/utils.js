@@ -1,3 +1,81 @@
+/*
+ * js class needed to update some data have got from async requests.
+ * native setInterval not good expecially if need call forceRefresh method
+ * so we used loop while(true){} with delay inside. when force refresh happen 
+ * we will stop loop, wait until loop refresh has been done, make force refresh 
+ * and resume loop. it will avoiding intersected requests
+ */
+class BalancesBlock {
+    
+    constructor() {
+        this.balancesBlockObj = $('#BalancesBlock');
+        this.blockNumberObj = $('#BalancesBlock .blockNumber');
+        this.blockTableObj = $('#BalancesBlock .blockTable');
+        this.msToRefresh = 1000;
+        this.provider = null;
+        this.loopCondition = true;
+        this.isRefreshingNow = false;
+        
+        this.loop();
+    }
+    
+    changedProvider(provider) {
+        console.log("BalancesBlock::changedProvider");
+        this.provider = provider;
+    }
+    
+    async refresh() {
+        this.loopCondition = false;
+
+        // await until isRefreshingNow eq false;
+        let tryTimes=0;
+        while (tryTimes<5 && this.isRefreshingNow == true) {
+            await this.delay(1000);    
+            tryTimes+=1;
+        }
+
+        if (this.isRefreshingNow == false) {
+            await this._refresh();
+        } else {
+            console.log("can't refresh");
+        }
+
+        this.loopCondition = true;
+        this.loop();
+        
+    }
+    delay(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
+      }
+    async _refresh() {
+        this.isRefreshingNow = true;
+        ////////////////////////////
+        
+        let blockNumber;
+        
+        if (this.provider && this.provider.selectedAddress) {
+            blockNumber = Date.now();
+        } else {
+            blockNumber = '--';
+        }
+        //synth delay
+        //await this.delay(4000);
+        
+        this.blockNumberObj.html(blockNumber);
+        
+        ////////////////////////////
+        this.isRefreshingNow = false;
+    }
+    
+    async loop() {
+        while (this.loopCondition) {
+            /* code to wait on goes here (sync or async) */    
+            await this._refresh();
+            await this.delay(this.msToRefresh)
+        }
+    }
+}
+
 class ContractStorage {
     
     constructor(key, jquerySelectorObj) {

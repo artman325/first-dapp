@@ -70,10 +70,22 @@
 
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
+            <div id="BalancesBlock" style="float:right; border:1px solid #f00; width:300px; height:200px; margin-right:20px; text-align: center;">
+                <h3>Balances<small>Block#:<span class="blockNumber">12345</span></small></h3>
+                <table class="blockTable">
+                    <thead></thead>
+                    <tbody>
+                    <th>
+                    <td>ETH</td><td>1111</td>
+                    </th>
+                    </tbody>
+                </table>
+            </div>
         <div class="container">
             <h1>Hello, world!</h1>
             <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
             <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+            
         </div>
     </div>
 
@@ -303,63 +315,101 @@
                               <label for="Pools-selectTemplate">Contract</label>
                               <select id="Pools-selectTemplate" class="selectTemplate form-control">
                                 <option value="pleasechoose">-please choose-</option>
-                                <option value="produce-simple">produce(simple)</option>
                                 <option value="produce">produce</option>
+                                <option value="produce-erc20">produce erc20</option>
                               </select>
                             </div>
                             <div class="tab-templateContent tab-pleasechoose">
                                 <div class="text-center">please choose template in select above</div>
                             </div>
-                            <div class="tab-templateContent tab-produce-simple">
-                                
+                            <div class="tab-templateContent tab-produce">
                                 <form>
                                     <div class="marginBottom40">
-                                        <h3>Produce Pool</h3>
+                                        <h3>Produce Staking Pool</h3>
                                     </div>
+                                    
+        
+            
+                                    
                                     <div class="form-group">
                                         <label for="tabPoolsReserveToken">ReserveToken address</label>
                                         <input type="text" class="form-control jsPoolsReserveToken" id="tabPoolsReserveToken" placeholder="address">
                                         <small class="form-text text-muted">
                                             reserveToken address of reserve token. like a WETH, USDT,USDC, etc.
-                                            <a href="javascript:fillFromStorage('#tabPoolsReserveToken', 'deployedImplementations', 'TITRc', 'address')">fill WETH address</a>
+                                            <a href="javascript:$('#tabPoolsReserveToken').val(chainConstants['weth']);">fill WETH address</a>
                                         </small>
                                     </div>
                                     <div class="form-group">
                                         <label for="tabPoolsTradedToken">TradedToken address</label>
                                         <input type="text" class="form-control jsPoolsTradedToken" id="tabPoolsTradedToken" placeholder="address">
                                         <small class="form-text text-muted">
-                                            tradedToken address of traded token. usual it intercoin investor token
-                                            <a href="javascript:fillFromStorage('#tabPoolsTradedToken', 'deployedImplementations', 'TITRc', 'address')">fill TITRc address if deployed before</a>
+                                            tradedToken address. usual it intercoin investor token
+                                            <a href="javascript:fillFromStorage('#tabPoolsTradedToken', 'deployedImplementations', 'TestITRc', 'address')">fill TITRc address if deployed before</a>
                                         </small>
                                     </div>
-                                    
-                                    <label for="basic-url">Community Settings</label>
-                                    <div style="margin:0 10px;">
-                                        <div class="form-group">
-                                            <label for="tabFactoriesCommunityAddress">address</label>
-                                            <input type="text" class="form-control jsCommunityAddress" id="tabFactoriesCommunityAddress" placeholder="address">
-                                            <small class="form-text text-muted"><a href="javascript:fillZeroAddress('#tabFactoriesCommunityAddress')">fill address(0)</a></small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="tabFactoriesCommunityAdminRole">admin's role</label>
-                                            <input type="text" class="form-control jsCommunityAdminRole" id="tabFactoriesCommunityAdminRole" placeholder="string">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="tabFactoriesCommunityRedeemRole">redeem's role</label>
-                                            <input type="text" class="form-control jsCommunityRedeemRole" id="tabFactoriesCommunityRedeemRole" placeholder="string">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="tabFactoriesCommunityCirculationRole">circulation's role</label>
-                                            <input type="text" class="form-control jsCommunityCirculationRole" id="tabFactoriesCommunityCirculationRole" placeholder="string">
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsDuration">Duration</label>
+                                        <input type="text" class="form-control jsPoolsDuration" id="tabPoolsDuration" placeholder="uint64">
                                     </div>
-                                    
+                                    <div class="form-group">
+                                        <label for="tabPoolsDonations">Donations</label>
+                                        <input type="text" class="form-control jsPoolsDonations" id="tabPoolsDonations" placeholder="IStructs.StructAddrUint256[]" value="[]" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsReserveTokenClaimFraction">ReserveTokenClaimFraction</label>
+                                        <input type="text" class="form-control jsPoolsReserveTokenClaimFraction" id="tabPoolsReserveTokenClaimFraction" placeholder="uint64">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsTradedTokenClaimFraction">TradedTokenClaimFraction</label>
+                                        <input type="text" class="form-control jsPoolsTradedTokenClaimFraction" id="tabPoolsTradedTokenClaimFraction" placeholder="uint64">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsLpClaimFraction">LpClaimFraction</label>
+                                        <input type="text" class="form-control jsPoolsLpClaimFraction" id="tabPoolsLpClaimFraction" placeholder="uint64">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsNumerator">Numerator</label>
+                                        <input type="text" class="form-control jsPoolsNumerator" id="tabPoolsNumerator" placeholder="uint64">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsDenominator">Denominator</label>
+                                        <input type="text" class="form-control jsPoolsDenominator" id="tabPoolsDenominator" placeholder="uint64">
+                                    </div>
                                     
                                     <button type="submit" class="btn btn-primary">Submit</button>    
                                 </form>
                                 
                             </div>
-                            <div class="tab-templateContent tab-produce">
+                            <div class="tab-templateContent tab-produce-erc20">
+
+                                <form>
+                                    <div class="marginBottom40">
+                                        <h3>Produce ERC20-Staking Pool</h3>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsErc20TokenErc20">tokenErc20 address</label>
+                                        <input type="text" class="form-control jsPoolsErc20TokenErc20" id="tabPoolsErc20TokenErc20" placeholder="address">
+                                        
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsErc20Duration">Duration</label>
+                                        <input type="text" class="form-control jsPoolsErc20Duration" id="tabPoolsErc20Duration" placeholder="uint64">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsErc20Donations">Donations</label>
+                                        <input type="text" class="form-control jsPoolsErc20Donations" id="tabPoolsErc20Donations" placeholder="IStructs.StructAddrUint256[]" value="[]" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsErc20Numerator">Numerator</label>
+                                        <input type="text" class="form-control jsPoolsErc20Numerator" id="tabPoolsErc20Numerator" placeholder="uint64">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsErc20Denominator">Denominator</label>
+                                        <input type="text" class="form-control jsPoolsErc20Denominator" id="tabPoolsErc20Denominator" placeholder="uint64">
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">Submit</button>    
+                                </form>
                                 <div class="text-center">please choose template in select above</div>
                             </div>
                         </div>
@@ -416,7 +466,7 @@
         <script src="js/tabs.js"></script>
         <script src="js/admin-tab.js"></script>
         <script src="js/factories-tab.js"></script>
-        
+        <script src="js/pools-tab.js"></script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>
