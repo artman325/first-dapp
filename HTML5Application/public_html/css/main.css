@@ -23,7 +23,14 @@
     font-size: 16px;
 }
 
-
+.balanceBox {
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 15px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    float:right; 
+    width:300px; 
+    height:200px; 
+    margin-right:20px; 
+    text-align: center;
+}
 
 
 

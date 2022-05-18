@@ -11,17 +11,41 @@ class BalancesBlock {
         this.balancesBlockObj = $('#BalancesBlock');
         this.blockNumberObj = $('#BalancesBlock .blockNumber');
         this.blockTableObj = $('#BalancesBlock .blockTable');
-        this.msToRefresh = 1000;
+        this.msToRefresh = 5000;
         this.provider = null;
         this.loopCondition = true;
         this.isRefreshingNow = false;
         
         this.loop();
+        
+        var objThis = this;
+        fetch('artifacts/TestITRc.json')
+        .then(response => response.text())
+        .then( async function(text){
+            text = JSON.parse(text);
+            objThis.ERC20Abi = text.abi;
+        });
+        
+        fetch('artifacts/CommunityStakingPool.json')
+        .then(response => response.text())
+        .then( async function(text){
+            text = JSON.parse(text);
+            objThis.CommunityStakingPoolAbi = text.abi;
+        });
+        fetch('artifacts/CommunityCoin.json')
+        .then(response => response.text())
+        .then( async function(text){
+            text = JSON.parse(text);
+            objThis.CommunityCoinAbi = text.abi;
+        });
+        
     }
     
-    changedProvider(provider) {
-        console.log("BalancesBlock::changedProvider");
+    async changedProvider(provider) {
+        //console.log("BalancesBlock::changedProvider");
         this.provider = provider;
+        //console.log('selectedAddress=', provider.selectedAddress);
+        await this.refresh();
     }
     
     async refresh() {
@@ -51,18 +75,69 @@ class BalancesBlock {
         this.isRefreshingNow = true;
         ////////////////////////////
         
-        let blockNumber;
+        let tmp,blockNumber, userBalance, userCoins;
+        
+        let listPools = new ContractStorage('pools').getList();
+        
+        let communityCoinItem = new ContractStorage('deployedFactories').getItem("CommunityCoin");
+        
+//        $("#navbar .jsWalletAddress").html(userAddress);
+//        $("#navbar .jsWalletBalance").html(userBalance);
         
         if (this.provider && this.provider.selectedAddress) {
-            blockNumber = Date.now();
+            tmp = await this.provider.send("eth_blockNumber",[]);
+            blockNumber = tmp.result;
+            
+            tmp = await this.provider.send("eth_getBalance", [ethers.utils.getAddress(this.provider.selectedAddress), "latest"]);
+            userBalance = ethers.utils.formatEther(tmp.result, {commify: true});
+            
+            try {
+             
+                if (listPools.length>0) {
+
+                    const signer = (new ethers.providers.Web3Provider(window.ethereum, "any")).getSigner();
+
+                    tmp = new ethers.Contract(communityCoinItem.address, this.CommunityCoinAbi, signer);
+
+                    userCoins = ethers.utils.formatEther(await tmp.balanceOf(this.provider.selectedAddress), {commify: true});
+
+                    for (let pool of listPools) {
+
+                        tmp = new ethers.Contract(pool.address, this.CommunityStakingPoolAbi, signer);
+                        //item.totalbalance 
+                        let pairAddress = await tmp.uniswapV2Pair();
+                        //console.log(pair);
+                        let pairContract = new ethers.Contract(pairAddress, this.ERC20Abi, signer);
+                        //console.log(await tmp.balanceOf(this.provider.selectedAddress));
+                        pool.uniswaplpTokens = ethers.utils.formatEther(await pairContract.balanceOf(pool.address), {commify: true});
+                    }
+                }  
+   
+            }
+            catch (e){
+                console.log("catch (e){");
+                userCoins = '--';
+                
+            }
+            
         } else {
-            blockNumber = '--';
+            userCoins = '--';
+            userBalance = '--';
+            blockNumber = 0;
         }
+        
         //synth delay
         //await this.delay(4000);
         
-        this.blockNumberObj.html(blockNumber);
+        this.blockNumberObj.html('#'+parseInt(blockNumber));
+        this.blockTableObj.find(".nodelete .ethValue").html(userBalance);
+        this.blockTableObj.find(".nodelete .coinsValue").html(userCoins);
         
+        this.blockTableObj.find("tr").not(".nodelete").remove();
+        let jSelector = this.blockTableObj.find(".nodelete:last");
+        for (let item of listPools) {
+            jSelector.after("<tr><th>"+item.title+"</th><th>"+item.uniswaplpTokens+"</th></tr>")
+        }
         ////////////////////////////
         this.isRefreshingNow = false;
     }
@@ -169,10 +244,73 @@ class ContractStorage {
   
 }
 
+class ContractArtifacts {
+    constructor() {
+        
+        
+        this.data = {};
+        this.fetchData();
+        
+    }
+    
+    fetchData() {
+        var objThis = this;
+        
+        [
+            "IWETH",
+            "CommunityCoin",
+            "CommunityCoinFactory",
+            "CommunityRolesManagement",
+            "CommunityStakingPool",
+            "CommunityStakingPoolErc20",
+            "CommunityStakingPoolFactory",
+            "TestITRc",
+            "UniswapV2Factory",
+            "UniswapV2Pair",
+            "UniswapV2Router02"
+        ].forEach(function(fname){
+            
+            fetch('artifacts/'+fname+'.json')
+            .then(response => response.text())
+            .then( async function(text){
+                text = JSON.parse(text);
+                objThis.data[fname] = {};
+                objThis.data[fname]['abi'] = text.abi;
+                objThis.data[fname]['bytecode'] = text.bytecode;
+            });
+        })
+        
+    }
+    
+    getAbi(key) {
+        if (typeof(this.data[key]) !== 'undefined') {
+            return this.data[key]['abi'];
+        } else {
+            throw 'unknown key';
+        }
+    }
+    getBytecode(key) {
+        if (typeof(this.data[key]) !== 'undefined') {
+            return this.data[key]['bytecode'];
+        } else {
+            throw 'unknown key';
+        }
+    }
+}
 
 function fillZeroAddress(id) {
     $(id).val('0x0000000000000000000000000000000000000000');
 }
+function fillOneEth(id) {
+    $(id).val('1000000000000000000');
+}
+
+function fillCurrentAddress(id) {
+    if (provider && provider.selectedAddress) {
+        $(id).val(provider.selectedAddress);
+    }
+}
+
 function fillFromStorage(id, key, name, attr) {
     let st = new ContractStorage(key);
     if (st.itemExists(name)) {

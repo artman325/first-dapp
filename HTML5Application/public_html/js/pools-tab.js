@@ -35,6 +35,7 @@ class TabPools {
     }
     refresh() {
         console.log("TabPools::i am here");
+        
         this.contractStorageObj.refresh();
     }
     setupHandlers() {
@@ -97,8 +98,6 @@ class TabPools {
                     p.push($("#tabPoolsLpClaimFraction").val());
                     p.push($("#tabPoolsNumerator").val());
                     p.push($("#tabPoolsDenominator").val());
-
-
 
                     tx = await contract["produce(address,address,uint64,(address,uint256)[],uint64,uint64,uint64,uint64,uint64)"](...p);
 

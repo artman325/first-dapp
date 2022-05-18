@@ -35,15 +35,20 @@ function chainConstantsSetup(chainId) {
 var provider;
 var chainConstants;
 var balances;
+var artifacts;
 
 async function main() {
     balances = new BalancesBlock();
+    artifacts = new ContractArtifacts();
+    
     provider = await detectEthereumProvider();
+    
     if (provider) {
     //    await provider.send("eth_requestAccounts", []);
         subscribeHandlers(provider);
         fetchAccountData();
     }
+    
     
     //fetchAccountData();
     
@@ -85,6 +90,7 @@ async function subscribeHandlers(provider) {
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
   }
+  
 async function fetchAccountData() {
     console.log("fetchAccountData()");
     let userAddress, userBalance, isConnected;

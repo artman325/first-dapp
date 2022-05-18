@@ -70,16 +70,21 @@
 
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
-            <div id="BalancesBlock" style="float:right; border:1px solid #f00; width:300px; height:200px; margin-right:20px; text-align: center;">
-                <h3>Balances<small>Block#:<span class="blockNumber">12345</span></small></h3>
-                <table class="blockTable">
+            <div id="BalancesBlock" class="balanceBox">
+                <div style="position:absolute;">
+                    <span class="blockNumber" style="position:relative; margin-left:220px;">12345</span>    
+                </div>
+                
+                <table class="blockTable table table-striped">
                     <thead></thead>
                     <tbody>
-                    <th>
-                    <td>ETH</td><td>1111</td>
-                    </th>
+                    <tr class="nodelete"><th colspan="2" style="text-align:center">User Balances</th></tr>
+                    <tr class="nodelete"><th>ETH</th><th class="ethValue">---</th></tr>
+                    <tr class="nodelete"><th>CCoins</th><th class="coinsValue">---</th></tr>
+                    <tr class="nodelete"><th colspan="2" style="text-align:center">Pools's TotalSupply</th></tr>
                     </tbody>
                 </table>
+                
             </div>
         <div class="container">
             <h1>Hello, world!</h1>
@@ -433,11 +438,143 @@
                               <label for="Users-selectTemplate">Contract</label>
                               <select id="Users-selectTemplate" class="selectTemplate form-control">
                                 
-                                <!-- filled by js script->
+                                <!-- filled by js script -->
                               </select>
                             </div>
-                            <div class="tab-templateContent tab-pleasechoose">
-                                <div class="text-center">please choose template in select above</div>
+                            <div class="tab-templateContent tab-form-stake">
+                                
+                                <form>
+                                    <div class="form-group">
+                                        <label for="tabUsersPayingTokenAddress">PayingToken address</label>
+                                        <input type="text" class="form-control jsPayingTokenAddress" id="tabUsersPayingTokenAddress" placeholder="address">
+                                        <small class="form-text text-muted">
+                                            fill 
+                                            <a href="javascript:fillZeroAddress('#tabUsersPayingTokenAddress')">address(0)</a>
+                                        </small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabUsersPayingTokenAmount">PayingToken amount</label>
+                                        <input type="text" class="form-control jsPayingTokenAmount" id="tabUsersPayingTokenAmount" placeholder="uint256">
+                                        <small class="form-text text-muted">
+                                            if paying token nor address(0) then need to <a href="javascript:void(0)" class="jsApprove">approve</a> before transaction.
+                                            <a href="javascript:fillOneEth('#tabUsersPayingTokenAmount')">fill 1e18</a>
+                                        </small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabUsersBeneficiary">Beneficiary address</label>
+                                        <input type="text" class="form-control jsBeneficiary" id="tabUsersBeneficiary" placeholder="address">
+                                        <small class="form-text text-muted">
+                                            <a href="javascript:fillCurrentAddress('#tabUsersBeneficiary')">fill msgSender</a>
+                                        </small>
+                                    </div>
+                                  
+                                  <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+          <!--
+    function buyLiquidityAndStake(
+    ) 
+        public 
+        payable 
+        nonReentrant
+    {
+        address account = _msgSender();
+        require(msg.value>0, "INSUFFICIENT_BALANCE");
+        uint256 amountETH = msg.value;
+        IWETH(WETH).deposit{value: amountETH}();
+        uint256 amountReserveToken = doSwapOnUniswap(WETH, reserveToken, amountETH);
+        _buyLiquidityAndStake(account, amountReserveToken);
+    }
+    
+    /** 
+    * @notice method will receive payingToken token, exchange to reserve token via uniswap. 
+    * Finally will add to liquidity pool and stake it. Sender will obtain shares 
+    * @custom:shortd  the way to buy liquidity and stake via paying token
+    */
+    function buyLiquidityAndStake(
+        address payingToken, 
+        uint256 amount
+    ) 
+        public 
+        nonReentrant
+    {
+        address account = _msgSender();
+        IERC20Upgradeable(payingToken).transferFrom(account, address(this), amount);
+        uint256 amountReserveToken = doSwapOnUniswap(payingToken, reserveToken, amount);
+        _buyLiquidityAndStake(account, amountReserveToken);
+    }
+    
+    /** 
+    * @notice method will receive reserveToken token then will add to liquidity pool and stake it. Sender will obtain shares 
+    * @custom:shortd  the way to buy liquidity and stake via reserveToken
+    */
+    function buyLiquidityAndStake(
+        uint256 tokenBAmount
+    ) 
+        public 
+        nonReentrant
+    {
+
+        address account = _msgSender();
+        IERC20Upgradeable(reserveToken).transferFrom(account, address(this), tokenBAmount);
+        _buyLiquidityAndStake(account, tokenBAmount);
+    }
+
+    /** 
+    * @notice payble method will receive ETH, convert it to WETH, exchange to reserve token via uniswap. 
+    * Finally will add to liquidity pool and stake it. Beneficiary will obtain shares 
+    * @custom:shortd  the way to buy liquidity and stake via ETH. Beneficiary will obtain shares 
+    */
+    function buyLiquidityAndStake(
+        address beneficiary
+    ) 
+        public 
+        payable 
+        nonReentrant
+    {
+        require(msg.value>0, "INSUFFICIENT_BALANCE");
+        uint256 amountETH = msg.value;
+        IWETH(WETH).deposit{value: amountETH}();
+        uint256 amountReserveToken = doSwapOnUniswap(WETH, reserveToken, amountETH);
+        _buyLiquidityAndStake(beneficiary, amountReserveToken);
+    }
+    
+    /** 
+    * @notice method will receive payingToken token, exchange to reserve token via uniswap. 
+    * Finally will add to liquidity pool and stake it. Beneficiary will obtain shares 
+    * @custom:shortd  the way to buy liquidity and stake via paying token. Beneficiary will obtain shares 
+    */
+    function buyLiquidityAndStake(
+        address payingToken, 
+        uint256 amount,
+        address beneficiary
+    ) 
+        public 
+        nonReentrant
+    {
+        // note that here can be magic trick
+        // trusted forwarder can be call tx as a Bob that wanted to specify alice as a beneficiary
+        address account = _msgSender();
+        IERC20Upgradeable(payingToken).transferFrom(account, address(this), amount);
+        uint256 amountReserveToken = doSwapOnUniswap(payingToken, reserveToken, amount);
+        _buyLiquidityAndStake(beneficiary, amountReserveToken);
+    }
+    
+    /** 
+    * @notice method will receive reserveToken token then will add to liquidity pool and stake it. Beneficiary will obtain shares 
+    * @custom:shortd  the way to buy liquidity and stake via reserveToken. Beneficiary will obtain shares 
+    */
+    function buyLiquidityAndStake(
+        uint256 tokenBAmount,
+        address beneficiary
+    ) 
+        public 
+        nonReentrant
+    {
+        IERC20Upgradeable(reserveToken).transferFrom(msg.sender, address(this), tokenBAmount);
+        _buyLiquidityAndStake(beneficiary, tokenBAmount);
+    }
+    -->
+
                             </div>
                             
                         </div>
