@@ -92,14 +92,14 @@
     <div class="container">
         
         <ul class="nav nav-tabs">
-            <li><a href="#tabAdminPage" data-toggle="tab">AdminPage</a></li>
+            <li><a href="#tabAdmins" data-toggle="tab">AdminPage</a></li>
             <li><a href="#tabFactories" data-toggle="tab">Factories</a></li>
             <li><a href="#tabPools" data-toggle="tab">Pools</a></li>
             <li><a href="#tabUsers" data-toggle="tab">Users</a></li>
         </ul>
         <div class="tab-content" id="tabs">
-            <!-- tabAdminPage -->
-            <div class="tab-pane" id="tabAdminPage">
+            <!-- tabAdmins -->
+            <div class="tab-pane" id="tabAdmins">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="marginTop20">
@@ -425,7 +425,25 @@
                     </div>
                 </div>
             </div>
-            
+            <div class="tab-pane" id="tabUsers">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="marginTop20">
+                            <div class="form-group marginBottom40">
+                              <label for="Users-selectTemplate">Contract</label>
+                              <select id="Users-selectTemplate" class="selectTemplate form-control">
+                                
+                                <!-- filled by js script->
+                              </select>
+                            </div>
+                            <div class="tab-templateContent tab-pleasechoose">
+                                <div class="text-center">please choose template in select above</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
        
         
@@ -463,10 +481,12 @@
         
         <script src="js/main.js"></script>
         
-        <script src="js/tabs.js"></script>
+        
         <script src="js/admin-tab.js"></script>
         <script src="js/factories-tab.js"></script>
         <script src="js/pools-tab.js"></script>
+        <script src="js/users-tab.js"></script>
+        <script src="js/tabs.js"></script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>

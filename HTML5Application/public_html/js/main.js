@@ -18,9 +18,9 @@ function chainConstantsSetup(chainId) {
             uniswapRouterFactory: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
             weth: "0xc778417E063141139Fce010982780140Aa0cD5Ab"
         }
-        
     };
     
+    //console.log('chainId = ',chainId);
     if (chainId == '0x539') {
         chainId = '0x4';
     }
@@ -98,7 +98,6 @@ async function fetchAccountData() {
             let t = await provider.send("eth_getBalance", [userAddress, "latest"]);
             userBalance = ethers.utils.formatEther(t.result, {commify: true});
             
-        
             $("#navbar .jsWalletAddress").html(userAddress);
             $("#navbar .jsWalletBalance").html(userBalance);
             $("#navbar .jsOnline").show();
@@ -111,7 +110,6 @@ async function fetchAccountData() {
 
                     let t = await provider.send("eth_getBalance", [userAddress, "latest"]);
                     userBalance = ethers.utils.formatEther(t.result, {commify: true});
-
 
                     $("#navbar .jsWalletAddress").html(userAddress);
                     $("#navbar .jsWalletBalance").html(userBalance);
