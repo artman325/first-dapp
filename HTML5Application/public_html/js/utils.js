@@ -109,7 +109,7 @@ class BalancesBlock {
                         //console.log(pair);
                         let pairContract = new ethers.Contract(pairAddress, this.ERC20Abi, signer);
                         //console.log(await tmp.balanceOf(this.provider.selectedAddress));
-                        pool.uniswaplpTokens = ethers.utils.formatEther(await pairContract.balanceOf(pool.address), {commify: true});
+                        pool.uniswaplpTokens = ethers.utils.formatEther(await pairContract.balanceOf(pool.address), {commify: true,pad:6});
                     }
                 }  
    
@@ -119,11 +119,12 @@ class BalancesBlock {
                 userCoins = '--';
                 
             }
-            
+            $("#BalancesBlock .jsAlertBox").hide();
         } else {
             userCoins = '--';
             userBalance = '--';
             blockNumber = 0;
+            $("#BalancesBlock .jsAlertBox").html("Wallet is not connected").show();
         }
         
         //synth delay
@@ -154,18 +155,47 @@ class BalancesBlock {
 class ContractStorage {
     
     constructor(key, jquerySelectorObj) {
+        
         this.key = key;
         this.jquerySelectorObj = jquerySelectorObj;
+        
     }
-    
+    _getChainKey() {
+        return provider.chainId;
+    }
+    confirmClear() {
+        
+        return window.confirm("Are you sure to clear storage for ChainID="+provider.chainId+"");
+    }
     clear() {
-        localStorage.setItem(this.key, JSON.stringify([]));
+        let list = localStorage.getItem(this._getChainKey());
+        list = (typeof(list) === 'undefined' || list == null) ? {} : JSON.parse(list);
+        list[this.key] = [];
+        
+        localStorage.setItem(this._getChainKey(), JSON.stringify(list));
     }
 
     getList() {
-        let list = localStorage.getItem(this.key);
-        list = (typeof(list) === 'undefined' || list == null) ? [] : JSON.parse(list);
-        return list;
+        if (provider && provider.chainId) {
+            let data = localStorage.getItem(this._getChainKey());
+
+            data = (typeof(data) === 'undefined' || data == null) ? [] : JSON.parse(data);
+
+            return (typeof(data[this.key]) === 'undefined' || data[this.key] == null) ? []:data[this.key];
+        } else {
+            
+            return [];
+        }
+    }
+    saveList(list) {
+
+        let data = localStorage.getItem(this._getChainKey());
+
+        data = (typeof(data) === 'undefined' || data == null) ? {} : JSON.parse(data);
+
+        data[this.key] = list;
+
+        localStorage.setItem(this._getChainKey(), JSON.stringify(data));
     }
     getItem(name) {
         let address, creator;
@@ -187,8 +217,10 @@ class ContractStorage {
 
     }
     setItem(name, title, address, creator) {
-        
+
+
         let list = this.getList();
+
         let index=null;
         for (let i=0; i<list.length; i++) {
             
@@ -208,8 +240,8 @@ class ContractStorage {
             list[index].title=title;
             list[index].address=address;
         }
-        
-        localStorage.setItem(this.key, JSON.stringify(list));
+
+        this.saveList(list);
     
     }
     

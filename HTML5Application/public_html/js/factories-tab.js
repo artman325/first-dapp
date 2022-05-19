@@ -9,7 +9,7 @@ class TabFactories {
         this.init();
         this.setupHandlers();
         
-        this.refresh();
+        //this.refresh();
     }
     init() {
         this.fraction = 100000;

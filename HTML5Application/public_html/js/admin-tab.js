@@ -8,10 +8,10 @@ class TabAdmins {
 
         this.setupHandlers();
         
-        this.refresh();
+        //this.refresh();
     }
     refresh() {
-        console.log("i am here");
+        console.log("TabAdmins:refresh");
         this.contractStorageObj.refresh();
         fetchAccountData();
     }
@@ -23,7 +23,8 @@ class TabAdmins {
             //refreshDeployedImplementations();
         });
         $("#tabAdmins .jsDeployedListTrash").off("click").on("click", function(){
-            if (window.confirm("Are you sure to clear list?")) {
+            //if (window.confirm("Are you sure to clear list?")) {
+            if (objThis.contractStorageObj.confirmClear()) {
                 objThis.contractStorageObj.clear();
                 objThis.contractStorageObj.writeHtml();
             }
@@ -42,7 +43,16 @@ class TabAdmins {
             if (provider.selectedAddress != null) {
                 let option = $("#tabAdmins .selectTemplate").val();
                 let itemExists = objThis.contractStorageObj.itemExists(option);
-                if (!itemExists || (itemExists && window.confirm("impementation already deployed. are you sure to replace exists?"))) {
+                if (
+                        !itemExists || 
+                        (
+                            itemExists && 
+                            (
+                                ((["UniswapV2Factory", "UniswapV2Router02"]).indexOf(option) !== -1) ||
+                                window.confirm("impementation already deployed. are you sure to replace exists?")
+                            )
+                        )) 
+                {
 
 
                     fetch('artifacts/'+option+'.json')
@@ -60,6 +70,7 @@ class TabAdmins {
 
 
                             var contract;
+                            var tx;
                             // Deploy an instance of the contract
                             if ((["UniswapV2Factory", "UniswapV2Router02"]).indexOf(option) === -1) {
 
@@ -73,7 +84,7 @@ class TabAdmins {
                                 } else {
                                     contract = await factory.deploy();
                                 }
-
+                                
                                 objThis.contractStorageObj.setItem(option, option, contract.address, provider.selectedAddress);
                             } else {
                                 // or attach exists and call method 

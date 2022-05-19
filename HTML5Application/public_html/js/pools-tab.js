@@ -11,7 +11,7 @@ class TabPools {
         
         
         
-        this.refresh();
+        //this.refresh();
     }
     
     init() {

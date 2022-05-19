@@ -37,7 +37,10 @@ var chainConstants;
 var balances;
 var artifacts;
 
+
+
 async function main() {
+    console.log("main start");
     balances = new BalancesBlock();
     artifacts = new ContractArtifacts();
     
@@ -46,6 +49,7 @@ async function main() {
     if (provider) {
     //    await provider.send("eth_requestAccounts", []);
         subscribeHandlers(provider);
+        balances.changedProvider(provider);
         fetchAccountData();
     }
     
@@ -61,6 +65,7 @@ async function subscribeHandlers(provider) {
         console.log(provider);
         balances.changedProvider(provider);
         fetchAccountData();
+        tabsRefresh();    
     });
 
     // Subscribe to chainId change
@@ -70,6 +75,7 @@ async function subscribeHandlers(provider) {
         balances.changedProvider(provider);
         chainConstants = chainConstantsSetup(chainId);
         fetchAccountData();
+        tabsRefresh();    
     });
 
     provider.on("connect", (networkId) => {
@@ -78,19 +84,22 @@ async function subscribeHandlers(provider) {
         chainConstants = chainConstantsSetup(networkId.chainId);
         
         fetchAccountData();
+        tabsRefresh();    
     });
     provider.on("disconnect", (networkId) => {
         console.log("handle:disconnect");
         balances.changedProvider(null);
         fetchAccountData();
+        tabsRefresh();    
         
     });
     
 }
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
-  }
+}
   
+
 async function fetchAccountData() {
     console.log("fetchAccountData()");
     let userAddress, userBalance, isConnected;
@@ -108,7 +117,11 @@ async function fetchAccountData() {
             $("#navbar .jsWalletBalance").html(userBalance);
             $("#navbar .jsOnline").show();
             $("#navbar .jsOffline").hide();
+            
         } else {
+            $("#navbar .jsOnline").hide();
+            $("#navbar .jsOffline").show();  
+                    
             delay(100).then(async() => {
                 if (provider.selectedAddress) {
                     isConnected = true;
@@ -121,7 +134,12 @@ async function fetchAccountData() {
                     $("#navbar .jsWalletBalance").html(userBalance);
                     $("#navbar .jsOnline").show();
                     $("#navbar .jsOffline").hide();
+                tabsRefresh();    
+                } else {
+                    $("#navbar .jsOnline").hide();
+                    $("#navbar .jsOffline").show();            
                 }
+                
             });
 
         }
@@ -129,12 +147,7 @@ async function fetchAccountData() {
     } else {
         //
     }
-    
-    if (!isConnected) {
-        $("#navbar .jsOnline").hide();
-        $("#navbar .jsOffline").show();
-    }
-    
+
 }
 
 async function walletConnect() {

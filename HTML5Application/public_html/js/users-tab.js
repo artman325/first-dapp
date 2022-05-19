@@ -8,7 +8,7 @@ class TabUsers {
 
         this.setupHandlers();
         
-        this.refresh();
+        //this.refresh();
     }
     refresh() {
         this.fillSelect();
@@ -19,6 +19,8 @@ class TabUsers {
         let obj = $("#tabUsers select.selectTemplate");
         
         let list = new ContractStorage('pools').getList();
+console.log("==========================");
+console.log(list);
         obj.html('');
         if (list.length>0) {
             for (let item of list) {
