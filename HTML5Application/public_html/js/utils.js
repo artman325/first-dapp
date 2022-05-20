@@ -11,13 +11,17 @@ class BalancesBlock {
         this.balancesBlockObj = $('#BalancesBlock');
         this.blockNumberObj = $('#BalancesBlock .blockNumber');
         this.blockTableObj = $('#BalancesBlock .blockTable');
+        this.userStakesTableObj = $('#tabUsers .blockTable');
         this.msToRefresh = 5000;
         this.provider = null;
         this.loopCondition = true;
+        
+        this.loopRefreshingNow = false;
         this.isRefreshingNow = false;
         
         this.loop();
         
+        this.qqq = 1111;
         var objThis = this;
         fetch('artifacts/TestITRc.json')
         .then(response => response.text())
@@ -49,10 +53,12 @@ class BalancesBlock {
     }
     
     async refresh() {
+
         this.loopCondition = false;
 
         // await until isRefreshingNow eq false;
         let tryTimes=0;
+        
         while (tryTimes<5 && this.isRefreshingNow == true) {
             await this.delay(1000);    
             tryTimes+=1;
@@ -74,11 +80,11 @@ class BalancesBlock {
     async _refresh() {
         this.isRefreshingNow = true;
         ////////////////////////////
-        
-        let tmp,blockNumber, userBalance, userCoins;
+
+        let tmp,blockNumber, userBalance, userCoins, coinsTotalValue;
         
         let listPools = new ContractStorage('pools').getList();
-        
+        let stakesList=[];
         let communityCoinItem = new ContractStorage('deployedFactories').getItem("CommunityCoin");
         
 //        $("#navbar .jsWalletAddress").html(userAddress);
@@ -98,8 +104,10 @@ class BalancesBlock {
                     const signer = (new ethers.providers.Web3Provider(window.ethereum, "any")).getSigner();
 
                     tmp = new ethers.Contract(communityCoinItem.address, this.CommunityCoinAbi, signer);
-
                     userCoins = ethers.utils.formatEther(await tmp.balanceOf(this.provider.selectedAddress), {commify: true});
+                    coinsTotalValue = ethers.utils.formatEther(await tmp.totalSupply(), {commify: true});
+                    
+                    stakesList = await tmp.viewLockedWalletTokensList(this.provider.selectedAddress);
 
                     for (let pool of listPools) {
 
@@ -117,12 +125,14 @@ class BalancesBlock {
             catch (e){
                 console.log("catch (e){");
                 userCoins = '--';
+                coinsTotalValue = '--';
                 
             }
             $("#BalancesBlock .jsAlertBox").hide();
         } else {
             userCoins = '--';
             userBalance = '--';
+            coinsTotalValue = '--';
             blockNumber = 0;
             $("#BalancesBlock .jsAlertBox").html("Wallet is not connected").show();
         }
@@ -130,25 +140,47 @@ class BalancesBlock {
         //synth delay
         //await this.delay(4000);
         
+        let jSelector;
+        
         this.blockNumberObj.html('#'+parseInt(blockNumber));
         this.blockTableObj.find(".nodelete .ethValue").html(userBalance);
         this.blockTableObj.find(".nodelete .coinsValue").html(userCoins);
+        this.blockTableObj.find(".nodelete .coinsTotalValue").html(coinsTotalValue);
+        
         
         this.blockTableObj.find("tr").not(".nodelete").remove();
-        let jSelector = this.blockTableObj.find(".nodelete:last");
+        jSelector = this.blockTableObj.find(".nodelete:last");
         for (let item of listPools) {
             jSelector.after("<tr><th>"+item.title+"</th><th>"+item.uniswaplpTokens+"</th></tr>")
         }
+        ///////////////////////////////////////
+        this.userStakesTableObj.find("tr").not(".nodelete").remove();
+        jSelector = this.userStakesTableObj.find(".nodelete:last");
+//                       // stakesList[item][0] = ethers.utils.formatEther(stakesList[item][0], {commify: true});
+//                       // stakesList[item][1] = (new Date(parseInt(stakesList[item][1]) * 1000)).toLocaleDateString('en-US');
+        for (let item of stakesList) {
+//            jSelector.after("<tr><th>"+item[0]+"</th><th>"+item[1]+"</th></tr>")
+          jSelector.after("<tr><th>"+ethers.utils.formatEther((item[0].toString()), {commify: true})+"</th><th>"+(new Date(parseInt(item[1]) * 1000)).toLocaleDateString('en-US')+"</th></tr>")
+        }   
+                
         ////////////////////////////
         this.isRefreshingNow = false;
     }
     
     async loop() {
-        while (this.loopCondition) {
-            /* code to wait on goes here (sync or async) */    
-            await this._refresh();
-            await this.delay(this.msToRefresh)
+        console.log("---------------------- loop started ---------------------- ");
+        if (this.loopRefreshingNow) {
+        } else {
+            this.loopRefreshingNow = true;
+            while (this.loopCondition) {
+                console.log('while (this.loopCondition)');
+                /* code to wait on goes here (sync or async) */    
+                await this._refresh();
+                await this.delay(this.msToRefresh)
+            }
+            this.loopRefreshingNow = false;
         }
+        console.log("---------------------- loop ended ---------------------- ");
     }
 }
 

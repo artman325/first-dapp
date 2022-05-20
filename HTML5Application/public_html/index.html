@@ -14,6 +14,8 @@
         <link rel="stylesheet" href="css/bootstrap.min.css">
 
         <link rel="stylesheet" href="css/main.css">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
         <script src="js/vendor/detect-provider.min.js"></script>
         <script src="js/vendor/ethers-5.2.umd.min.js" type="application/javascript"></script>
@@ -70,7 +72,8 @@
             <tr class="nodelete"><th colspan="2" style="text-align:center">User Balances</th></tr>
             <tr class="nodelete"><th>ETH</th><th class="ethValue">---</th></tr>
             <tr class="nodelete"><th>CCoins</th><th class="coinsValue">---</th></tr>
-            <tr class="nodelete"><th colspan="2" style="text-align:center">Pools's TotalSupply</th></tr>
+            <tr class="nodelete"><th colspan="2" style="text-align:center">TotalSupply</th></tr>
+            <tr class="nodelete"><th>CCoins</th><th class="coinsTotalValue">---</th></tr>
             </tbody>
         </table>
         <div class="alert-warning jsAlertBox" style="display:none"></div>
@@ -198,11 +201,12 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <h3>
+                        <h5>
                             Deployed list 
-                            <a class="jsDeployedListRefresh" href="javascript:void(0)"><span class="glyphicon glyphicon-refresh"></span></a>
-                            <a class="jsDeployedListTrash" href="javascript:void(0)"><span class="glyphicon glyphicon-trash"></span></a>
-                        </h3>
+
+                            <a class="jsDeployedListRefresh" href="javascript:void(0)"><span class="fa fa-refresh"></span></a>
+                            <a class="jsDeployedListTrash" href="javascript:void(0)"><span class="fa fa-trash"></span></a>
+                        </h5>
                         <div class="jsDeployedList">
                         </div>
                     </div>
@@ -258,7 +262,7 @@
                             <div class="tab-templateContent tab-CommunityCoinFactory-methods-produce">
                                 <form>
                                     <div class="marginBottom40">
-                                        <h3>Produce CommunityCoin</h3>
+                                        <h5>Produce CommunityCoin</h5>
                                     </div>
                                     <div class="form-group">
                                         <label for="tabFactoriesHook">Hook address</label>
@@ -301,11 +305,11 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <h3>
+                        <h5>
                             Deployed list 
-                            <a class="jsDeployedListRefresh" href="javascript:void(0)"><span class="glyphicon glyphicon-refresh"></span></a>
-                            <a class="jsDeployedListTrash" href="javascript:void(0)"><span class="glyphicon glyphicon-trash"></span></a>
-                        </h3>
+                            <a class="jsDeployedListRefresh" href="javascript:void(0)"><span class="fa fa-refresh"></span></a>
+                            <a class="jsDeployedListTrash" href="javascript:void(0)"><span class="fa fa-trash"></span></a>
+                        </h5>
                         <div class="jsDeployedList">
                         </div>
                     </div>
@@ -330,7 +334,7 @@
                             <div class="tab-templateContent tab-produce">
                                 <form>
                                     <div class="marginBottom40">
-                                        <h3>Produce Staking Pool</h3>
+                                        <h5>Produce Staking Pool</h5>
                                     </div>
                                     
         
@@ -389,7 +393,7 @@
 
                                 <form>
                                     <div class="marginBottom40">
-                                        <h3>Produce ERC20-Staking Pool</h3>
+                                        <h5>Produce ERC20-Staking Pool</h5>
                                     </div>
                                     <div class="form-group">
                                         <label for="tabPoolsErc20TokenErc20">tokenErc20 address</label>
@@ -420,11 +424,11 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <h3>
+                        <h5>
                             Deployed list 
-                            <a class="jsDeployedListRefresh" href="javascript:void(0)"><span class="glyphicon glyphicon-refresh"></span></a>
-                            <a class="jsDeployedListTrash" href="javascript:void(0)"><span class="glyphicon glyphicon-trash"></span></a>
-                        </h3>
+                            <a class="jsDeployedListRefresh" href="javascript:void(0)"><span class="fa fa-refresh"></span></a>
+                            <a class="jsDeployedListTrash" href="javascript:void(0)"><span class="fa fa-trash"></span></a>
+                        </h5>
                         <div class="jsDeployedList">
                         </div>
                     </div>
@@ -435,191 +439,130 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="marginTop20">
-
-                            <div class="tab-templateContent tab-form-stake">
+                            <div class="form-group marginBottom40">
+                              <label for="Users-selectTemplate">operation:</label>
+                              <select id="Users-selectTemplate" class="selectTemplate form-control">
+                                <option value="pleasechoose">-please choose-</option>
+                                <option value="buyandstake">Buy And Stake Liquidity</option>
+                              </select>
+                            </div>
+                            <div class="tab-templateContent tab-pleasechoose">
+                                <div class="text-center">please choose template in select above</div>
+                            </div>
+                            
+                            <div class="tab-templateContent tab-buyandstake">
                                 <div class="form-group">
-                                    <label> Enter community address or choose in select </label>
+                                    <label> Enter community staking pool address or choose in select </label>
                                     <div class="form-row">
                                         <div class="col">
-                                            <input type="text" class="form-control jsCommunityCoinAddress" id="tabUsersCommunityStakingPoolAddress" placeholder="address">
+                                            <input type="text" class="form-control tabUsersCommunityStakingPoolAddressInput" placeholder="address">
                                         </div>   
                                         <div class="col">
-                                            <select id="Users-selectTemplate" class="selectTemplate form-control">
+                                            <select id="Users-selectTemplate" class="tabUsersCommunityStakingPoolAddressSelect form-control">
                                                 <!-- filled by js script -->
                                             </select>
                                         </div>   
                                     </div>
                                 </div>
                                     
-                                <form>
-                                    <div class="form-group">
-                                        <label for="tabUsersTradedTokenAddress">TradedToken address</label>
-                                        <input type="text" class="form-control jsTradedTokenAddress" id="tabUsersTradedTokenAddress" placeholder="address">
-                                        <small class="form-text text-muted">
-                                            fill 
-                                            <a href="javascript:fillFromStorage('#tabUsersTradedTokenAddress', 'deployedImplementations', 'TestITRc', 'address')">TestITRc</a>
-                                        </small>
+                                
+                                <div class="form-group">    
+                                    <div class="btn-group btn-group-toggle jsRadioPayingChoise" data-toggle="buttons">
+                                       <label class="btn btn-secondary active" id="Reserved">
+                                       <input type="radio" name="payingchoise" autocomplete="off" value="Reserved"> Reserved
+                                       </label>
+                                       <label class="btn btn-secondary" id="Paying">
+                                       <input type="radio" name="payingchoise" autocomplete="off" value="Paying"> Paying
+                                       </label>
+                                       <label class="btn btn-secondary" id="ETH">
+                                       <input type="radio" name="payingchoise" autocomplete="off" value="ETH"> ETH
+                                       </label>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="tabUsersTradedTokenAmount">TradedToken amount</label>
-                                        <input type="text" class="form-control jsTradedTokenAmount" id="tabUsersTradedTokenAmount" placeholder="uint256">
-                                        <small class="form-text text-muted">
-                                            if traded token nor TestITRc then need to <a href="javascript:void(0)" class="jsApproveTradedTokenAmount">approve</a> before transaction.
-                                            <a href="javascript:fillOneEth('#tabUsersTradedTokenAmount')">fill 1e18</a>
-                                        </small>
-                                    </div>
+                                </div>
                                     
-                                    <div class="form-group">
-                                        <label for="tabUsersTradedTokenAddress">ReservedToken address</label>
-                                        <input type="text" class="form-control jsReservedTokenAddress" id="tabUsersTradedTokenAddress" placeholder="address">
-                                        <small class="form-text text-muted">
-                                            reserveToken address of reserve token. like a WETH, USDT,USDC, etc.
-                                            <a href="javascript:$('#tabPoolsReserveToken').val(chainConstants['weth']);">fill WETH address</a>
-                                        </small>
+                                <div class="marginTop20">        
+                                    <div class="jsSwitch jsSwitch-Reserved">
+                                        <!--
+                                        <div class="form-group">
+                                            <label for="tabUsersReservedTokenAddress">ReservedToken address</label>
+                                            <input type="text" class="form-control jsReservedTokenAddress" id="tabUsersReservedTokenAddress" placeholder="address">
+                                            <small class="form-text text-muted">
+                                                reserved token. like a WETH, USDT,USDC, etc.
+                                                <a href="javascript:$('#tabPoolsReserveToken').val(chainConstants['weth']);">fill WETH address</a>
+                                            </small>
+                                        </div>
+                                        -->
+                                        <div class="form-group">
+                                            <label for="tabUsersReservedTokenAmount">ReservedToken amount</label>
+                                            <input type="text" class="form-control jsReservedTokenAmount" id="tabUsersReservedTokenAmount" placeholder="uint256">
+                                            <small class="form-text text-muted">
+                                                <!--
+                                                if reserved token nor address(0) then need to <a href="javascript:void(0)" class="jsApproveReservedTokenAmount">approve</a> before transaction.
+                                                -->
+                                                <a href="javascript:fillOneEth('#tabUsersTradedTokenAmount')">fill 1e18</a>
+                                            </small>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="tabUsersReservedTokenAmount">ReservedToken amount</label>
-                                        <input type="text" class="form-control jsReservedTokenAmount" id="tabUsersReservedTokenAmount" placeholder="uint256">
-                                        <small class="form-text text-muted">
-                                            if traded token nor TestITRc then need to <a href="javascript:void(0)" class="jsApproveReservedTokenAmount">approve</a> before transaction.
-                                            <a href="javascript:fillOneEth('#tabUsersTradedTokenAmount')">fill 1e18</a>
-                                        </small>
+                                    <div class="jsSwitch jsSwitch-Paying">
+                                            <div class="form-group">
+                                            <label for="tabUsersPayingTokenAddress">PayingToken address</label>
+                                            <input type="text" class="form-control jsPayingTokenAddress" id="tabUsersPayingTokenAddress" placeholder="address">
+                                            <small class="form-text text-muted">
+                                                <!--
+                                                fill 
+                                                <a href="javascript:fillZeroAddress('#tabUsersPayingTokenAddress')">address(0)</a>
+                                                -->
+                                            </small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tabUsersPayingTokenAmount">PayingToken amount</label>
+                                            <input type="text" class="form-control jsPayingTokenAmount" id="tabUsersPayingTokenAmount" placeholder="uint256">
+                                            <small class="form-text text-muted">
+                                                <!--
+                                                if paying token nor address(0) then need to <a href="javascript:void(0)" class="jsApprovePayingTokenAmount">approve</a> before transaction.
+                                                -->
+                                                <a href="javascript:fillOneEth('#tabUsersPayingTokenAmount')">fill 1e18</a>
+                                            </small>
+                                        </div>
+
                                     </div>
-                                                                        
-                                    <div class="form-group">
-                                        <label for="tabUsersPayingTokenAddress">PayingToken address</label>
-                                        <input type="text" class="form-control jsPayingTokenAddress" id="tabUsersPayingTokenAddress" placeholder="address">
-                                        <small class="form-text text-muted">
-                                            fill 
-                                            <a href="javascript:fillZeroAddress('#tabUsersPayingTokenAddress')">address(0)</a>
-                                        </small>
+                                    <div class="jsSwitch jsSwitch-ETH">
+                                        <div class="form-group">
+                                            <label for="tabUsersETHAmount">ETH amount</label>
+                                            <input type="text" class="form-control jsETHAmount" id="tabUsersETHAmount" placeholder="uint256">
+                                            <small class="form-text text-muted">
+                                                <a href="javascript:fillOneEth('#tabUsersETHAmount')">fill 1e18</a>
+                                            </small>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="tabUsersPayingTokenAmount">PayingToken amount</label>
-                                        <input type="text" class="form-control jsPayingTokenAmount" id="tabUsersPayingTokenAmount" placeholder="uint256">
-                                        <small class="form-text text-muted">
-                                            if paying token nor address(0) then need to <a href="javascript:void(0)" class="jsApprove">approve</a> before transaction.
-                                            <a href="javascript:fillOneEth('#tabUsersPayingTokenAmount')">fill 1e18</a>
-                                        </small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="tabUsersBeneficiary">Beneficiary address</label>
-                                        <input type="text" class="form-control jsBeneficiary" id="tabUsersBeneficiary" placeholder="address">
-                                        <small class="form-text text-muted">
-                                            <a href="javascript:fillCurrentAddress('#tabUsersBeneficiary')">fill msgSender</a>
-                                        </small>
-                                    </div>
+                                    <!--
+                                    
+                                        <div class="form-group">
+                                            <label for="tabUsersBeneficiary">Beneficiary address</label>
+                                            <input type="text" class="form-control jsBeneficiary" id="tabUsersBeneficiary" placeholder="address">
+                                            <small class="form-text text-muted">
+                                                <a href="javascript:fillCurrentAddress('#tabUsersBeneficiary')">fill msgSender</a>
+                                            </small>
+                                        </div>
+                                    -->
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary jsBtnStake">Buy and Stake liquidity</button>
                                   
-                                  <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
-          <!--
-    function buyLiquidityAndStake(
-    ) 
-        public 
-        payable 
-        nonReentrant
-    {
-        address account = _msgSender();
-        require(msg.value>0, "INSUFFICIENT_BALANCE");
-        uint256 amountETH = msg.value;
-        IWETH(WETH).deposit{value: amountETH}();
-        uint256 amountReserveToken = doSwapOnUniswap(WETH, reserveToken, amountETH);
-        _buyLiquidityAndStake(account, amountReserveToken);
-    }
-    
-    /** 
-    * @notice method will receive payingToken token, exchange to reserve token via uniswap. 
-    * Finally will add to liquidity pool and stake it. Sender will obtain shares 
-    * @custom:shortd  the way to buy liquidity and stake via paying token
-    */
-    function buyLiquidityAndStake(
-        address payingToken, 
-        uint256 amount
-    ) 
-        public 
-        nonReentrant
-    {
-        address account = _msgSender();
-        IERC20Upgradeable(payingToken).transferFrom(account, address(this), amount);
-        uint256 amountReserveToken = doSwapOnUniswap(payingToken, reserveToken, amount);
-        _buyLiquidityAndStake(account, amountReserveToken);
-    }
-    
-    /** 
-    * @notice method will receive reserveToken token then will add to liquidity pool and stake it. Sender will obtain shares 
-    * @custom:shortd  the way to buy liquidity and stake via reserveToken
-    */
-    function buyLiquidityAndStake(
-        uint256 tokenBAmount
-    ) 
-        public 
-        nonReentrant
-    {
+                                  
 
-        address account = _msgSender();
-        IERC20Upgradeable(reserveToken).transferFrom(account, address(this), tokenBAmount);
-        _buyLiquidityAndStake(account, tokenBAmount);
-    }
-
-    /** 
-    * @notice payble method will receive ETH, convert it to WETH, exchange to reserve token via uniswap. 
-    * Finally will add to liquidity pool and stake it. Beneficiary will obtain shares 
-    * @custom:shortd  the way to buy liquidity and stake via ETH. Beneficiary will obtain shares 
-    */
-    function buyLiquidityAndStake(
-        address beneficiary
-    ) 
-        public 
-        payable 
-        nonReentrant
-    {
-        require(msg.value>0, "INSUFFICIENT_BALANCE");
-        uint256 amountETH = msg.value;
-        IWETH(WETH).deposit{value: amountETH}();
-        uint256 amountReserveToken = doSwapOnUniswap(WETH, reserveToken, amountETH);
-        _buyLiquidityAndStake(beneficiary, amountReserveToken);
-    }
-    
-    /** 
-    * @notice method will receive payingToken token, exchange to reserve token via uniswap. 
-    * Finally will add to liquidity pool and stake it. Beneficiary will obtain shares 
-    * @custom:shortd  the way to buy liquidity and stake via paying token. Beneficiary will obtain shares 
-    */
-    function buyLiquidityAndStake(
-        address payingToken, 
-        uint256 amount,
-        address beneficiary
-    ) 
-        public 
-        nonReentrant
-    {
-        // note that here can be magic trick
-        // trusted forwarder can be call tx as a Bob that wanted to specify alice as a beneficiary
-        address account = _msgSender();
-        IERC20Upgradeable(payingToken).transferFrom(account, address(this), amount);
-        uint256 amountReserveToken = doSwapOnUniswap(payingToken, reserveToken, amount);
-        _buyLiquidityAndStake(beneficiary, amountReserveToken);
-    }
-    
-    /** 
-    * @notice method will receive reserveToken token then will add to liquidity pool and stake it. Beneficiary will obtain shares 
-    * @custom:shortd  the way to buy liquidity and stake via reserveToken. Beneficiary will obtain shares 
-    */
-    function buyLiquidityAndStake(
-        uint256 tokenBAmount,
-        address beneficiary
-    ) 
-        public 
-        nonReentrant
-    {
-        IERC20Upgradeable(reserveToken).transferFrom(msg.sender, address(this), tokenBAmount);
-        _buyLiquidityAndStake(beneficiary, tokenBAmount);
-    }
-    -->
 
                             </div>
                             
                         </div>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="blockTable table table-striped">
+                            <thead></thead>
+                            <tbody>
+                            <tr class="nodelete"><th colspan="2" style="text-align:center">User Stakes</th></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

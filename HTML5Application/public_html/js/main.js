@@ -62,7 +62,6 @@ async function subscribeHandlers(provider) {
     // Subscribe to accounts change
     provider.on("accountsChanged", (accounts) => {
         console.log("handle:accountsChanged");
-        console.log(provider);
         balances.changedProvider(provider);
         fetchAccountData();
         tabsRefresh();    
@@ -80,9 +79,10 @@ async function subscribeHandlers(provider) {
 
     provider.on("connect", (networkId) => {
         console.log("handle:connect");
+        
         balances.changedProvider(provider);
         chainConstants = chainConstantsSetup(networkId.chainId);
-        
+console.log('chainConstants = ', chainConstants);
         fetchAccountData();
         tabsRefresh();    
     });
@@ -134,7 +134,7 @@ async function fetchAccountData() {
                     $("#navbar .jsWalletBalance").html(userBalance);
                     $("#navbar .jsOnline").show();
                     $("#navbar .jsOffline").hide();
-                tabsRefresh();    
+                    //tabsRefresh();    
                 } else {
                     $("#navbar .jsOnline").hide();
                     $("#navbar .jsOffline").show();            
