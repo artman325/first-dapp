@@ -70,7 +70,7 @@ class TabAdmins {
 
 
                             var contract;
-                            var tx;
+                            var tx, rc;
                             // Deploy an instance of the contract
                             if ((["UniswapV2Factory", "UniswapV2Router02"]).indexOf(option) === -1) {
 
@@ -103,15 +103,16 @@ class TabAdmins {
 
                                     contract = new ethers.Contract(chainConstants['uniswapRouterFactory'], abi, signer);    
 
-                                    let tttt = await contract.allPairsLength();
-                                    console.log(tttt);
+                                    //let tttt = await contract.allPairsLength();
+                                    
 
-                                    let tx = await contract.createPair(
+                                    tx = await contract.createPair(
                                         ($("#tabAdminPairTokenA").val()).trim(),
                                         ($("#tabAdminPairTokenB").val()).trim()
                                     );
 
-                                    let rc = await tx.wait(); // 0ms, as tx is already confirmed
+                                    rc = await tx.wait(); // 0ms, as tx is already confirmed
+                                    
                                     let event = rc.events.find(event => event.event === 'PairCreated');
                                     let instance;
                                     [,,instance,] = event.args;
@@ -119,6 +120,22 @@ class TabAdmins {
                                     objThis.contractStorageObj.setItem(option, "UniswapPair TestITRc-WETH", instance, provider.selectedAddress);
 
                                 } else if (option == 'UniswapV2Router02') {
+//                                    
+//                                    let $modalDiv = $('<div />').
+//                                            addClass('modal-dialog').
+//                                            addClass('modal-dialog-centered').
+//                                            appendTo('body');
+//                                    let $tableList = $('<table/>').appendTo($modalDiv);
+//                                    let $tbody = $('<tbody/>').appendTo($tableList);
+//                                    
+//                                    $tbody.append('<tr><td>111111111</td><td>22222222222</td></tr>');
+//                                    $tbody.append('<tr><td>33333333</td><td>44444444444</td></tr>');
+//                                    $tbody.append('<tr><td>5555555555555</td><td>6666666666</td></tr>');
+//                                    
+                                    
+                                    
+                                    
+                                    
                                     contract = new ethers.Contract(chainConstants['uniswapRouter'], abi, signer);    
 
                                     let token = $("#tabAdminAddLiquidityTokenA").val();
@@ -130,33 +147,74 @@ class TabAdmins {
                                     let ethAmount = $("#tabAdminAddLiquidityTokenAAmount").val();
 
                                     let tmp = objThis.contractStorageObj.getItem('TestITRc');
-
-                                    if (tmp.address && tmp.address == token) {
-
-                                        await fetch('artifacts/TestITRc.json')
-                                            .then(response => response.text())
-                                            .then( async function(text){
-                                                text = JSON.parse(text);
-                                                let abi = text.abi;
-
-                                                const titrc = new ethers.Contract(token, text.abi, signer);  
-                                                await titrc.mint(to, amountTokenDesired);
-                                                await titrc.approve(contract.address, amountTokenDesired);
-
-                                            });
-
+                                    let premint_preapprove = (tmp.address && tmp.address == token);
+                                    let titrc = new ethers.Contract(token, artifacts.getAbi("TestITRc"), signer);
+                                    
+                                    
+                                    let $modalDiv, $modalBody;
+                                    [$modalDiv, /*header*/, $modalBody,/*footer*/] = createModalBootstrap('Processing transactions');
+                                    
+                                    
+                                    let $tableList = $('<table/>').addClass("table table-striped").appendTo($modalBody);
+                                    let $tbody = $('<tbody/>').appendTo($tableList);
+                                    
+                                    if (premint_preapprove) {
+                                        $tbody.append('<tr class="stepPreMint"><td>Pre-mint:</td><td><i class="fa fa-refresh fa-spin"></i></td></tr>');
+                                        $tbody.append('<tr class="stepPreApprove"><td>Pre-Approve</td><td><i class="fa fa-refresh fa-spin"></i></td></tr>');
+                                    }
+                                    
+                                    $tbody.append('<tr class="stepTx"><td>addLiquidityETH</td><td><i class="fa fa-refresh fa-spin"></i></td></tr>');
+                                    
+                                    $modalDiv.modal('show');
+                                    
+//return;
+                                    
+                                    if (premint_preapprove) {
+                                        $tbody.find('tr.stepPreMint td:nth-child(1)').css('font-weight', 'bold');
+                                        try {
+                                            tx = await titrc.mint(to, amountTokenDesired);
+                                        } catch(e){
+                                            $tbody.find('tr.stepPreMint td:nth-child(2)').html(e.data.message);
+                                            return;
+                                        };
+                                        rc = await tx.wait();
+                                        $tbody.find('tr.stepPreMint td:nth-child(2)').html((rc.status == 1)? 'Success' : 'Failed');
+                                        if (rc.status != 1) {return;}
+                                        $tbody.find('tr.stepPreMint td:nth-child(1)').css('font-weight', 'normal');
+                                        
+                                        $tbody.find('tr.stepPreApprove td:nth-child(1)').css('font-weight', 'bold');
+                                        try {
+                                            tx = await titrc.approve(contract.address, amountTokenDesired);
+                                        } catch(e){
+                                            $tbody.find('tr.stepPreApprove td:nth-child(2)').html(e.data.message);
+                                            return;
+                                        };
+                                        rc = await tx.wait();
+                                        $tbody.find('tr.stepPreApprove td:nth-child(2)').html((rc.status == 1)? 'Success' : 'Failed');
+                                        if (rc.status != 1) {return;}
+                                        $tbody.find('tr.stepPreApprove td:nth-child(1)').css('font-weight', 'normal');
                                     }
 
+                                    $tbody.find('tr.stepTx td:nth-child(1)').css('font-weight', 'bold');
+                                    try {                                    
+                                        tx = await contract.addLiquidityETH(
+                                            token,
+                                            amountTokenDesired,
+                                            amountTokenMin,
+                                            amountETHMin,
+                                            to,
+                                            deadline,
+                                            {value: ethAmount}
+                                        );
 
-                                    let tx = await contract.addLiquidityETH(
-                                        token,
-                                        amountTokenDesired,
-                                        amountTokenMin,
-                                        amountETHMin,
-                                        to,
-                                        deadline,
-                                        {value: ethAmount}
-                                    );
+                                    } catch(e){
+                                        $tbody.find('tr.stepTx td:nth-child(2)').html(e.data.message);
+                                        return;
+                                    };
+                                    rc = await tx.wait();
+                                    $tbody.find('tr.stepTx td:nth-child(2)').html((rc.status == 1)? 'Success' : 'Failed');
+                                    if (rc.status != 1) {return;}
+                                    $tbody.find('tr.stepTx td:nth-child(1)').css('font-weight', 'normal');
 
                                 }
 
