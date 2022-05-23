@@ -70,20 +70,28 @@ class TabAdmins {
 
 
                             var contract;
-                            var tx, rc;
+                            var tx, rc, success;
                             // Deploy an instance of the contract
                             if ((["UniswapV2Factory", "UniswapV2Router02"]).indexOf(option) === -1) {
 
                                 // The factory we use for deploying contracts
                                 let factory = new ethers.ContractFactory(abi, bytecode, signer)
                                 let p = [];
-                                if (option == "TestITRc") {
-                                    p.push('ITRc for Testing');
-                                    p.push('TITRc');
-                                    contract = await factory.deploy(...p);
-                                } else {
-                                    contract = await factory.deploy();
-                                }
+                                try {  
+                                    if (option == "TestITRc") {
+                                        p.push('ITRc for Testing');
+                                        p.push('TITRc');
+                                        contract = await factory.deploy(...p);
+                                    } else {
+                                        contract = await factory.deploy();
+                                    }
+                                } catch(e){
+                                    let $modalDiv,$modalBody;
+                                    [$modalDiv, /*header*/, $modalBody,/*footer*/] = createModalBootstrap((option == "TestITRc") ? 'ITRc (for testing)' : 'Creation instance' );
+                                    $modalBody.html(e.data.message);
+                                    $modalDiv.modal('show');
+                                    return;
+                                };
                                 
                                 objThis.contractStorageObj.setItem(option, option, contract.address, provider.selectedAddress);
                             } else {
@@ -105,12 +113,18 @@ class TabAdmins {
 
                                     //let tttt = await contract.allPairsLength();
                                     
-
-                                    tx = await contract.createPair(
-                                        ($("#tabAdminPairTokenA").val()).trim(),
-                                        ($("#tabAdminPairTokenB").val()).trim()
-                                    );
-
+                                    try {  
+                                        tx = await contract.createPair(
+                                            ($("#tabAdminPairTokenA").val()).trim(),
+                                            ($("#tabAdminPairTokenB").val()).trim()
+                                        );
+                                    } catch(e){
+                                        let $modalDiv,$modalBody;
+                                        [$modalDiv, /*header*/, $modalBody,/*footer*/] = createModalBootstrap('Uniswap: Create Pair');
+                                        $modalBody.html(e.data.message);
+                                        $modalDiv.modal('show');
+                                        return;
+                                    };
                                     rc = await tx.wait(); // 0ms, as tx is already confirmed
                                     
                                     let event = rc.events.find(event => event.event === 'PairCreated');
@@ -120,21 +134,8 @@ class TabAdmins {
                                     objThis.contractStorageObj.setItem(option, "UniswapPair TestITRc-WETH", instance, provider.selectedAddress);
 
                                 } else if (option == 'UniswapV2Router02') {
-//                                    
-//                                    let $modalDiv = $('<div />').
-//                                            addClass('modal-dialog').
-//                                            addClass('modal-dialog-centered').
-//                                            appendTo('body');
-//                                    let $tableList = $('<table/>').appendTo($modalDiv);
-//                                    let $tbody = $('<tbody/>').appendTo($tableList);
-//                                    
-//                                    $tbody.append('<tr><td>111111111</td><td>22222222222</td></tr>');
-//                                    $tbody.append('<tr><td>33333333</td><td>44444444444</td></tr>');
-//                                    $tbody.append('<tr><td>5555555555555</td><td>6666666666</td></tr>');
-//                                    
                                     
-                                    
-                                    
+                                    let objModal = new modalBootstrapTransactions();
                                     
                                     contract = new ethers.Contract(chainConstants['uniswapRouter'], abi, signer);    
 
@@ -149,55 +150,27 @@ class TabAdmins {
                                     let tmp = objThis.contractStorageObj.getItem('TestITRc');
                                     let premint_preapprove = (tmp.address && tmp.address == token);
                                     let titrc = new ethers.Contract(token, artifacts.getAbi("TestITRc"), signer);
-                                    
-                                    
-                                    let $modalDiv, $modalBody;
-                                    [$modalDiv, /*header*/, $modalBody,/*footer*/] = createModalBootstrap('Processing transactions');
-                                    
-                                    
-                                    let $tableList = $('<table/>').addClass("table table-striped").appendTo($modalBody);
-                                    let $tbody = $('<tbody/>').appendTo($tableList);
-                                    
+ 
                                     if (premint_preapprove) {
-                                        $tbody.append('<tr class="stepPreMint"><td>Pre-mint:</td><td><i class="fa fa-refresh fa-spin"></i></td></tr>');
-                                        $tbody.append('<tr class="stepPreApprove"><td>Pre-Approve</td><td><i class="fa fa-refresh fa-spin"></i></td></tr>');
+                                        objModal.addStep('stepPreMint', 'Pre-mint');
+                                        objModal.addStep('stepPreApprove', 'Pre-Approve');
                                     }
+                                    objModal.addStep('stepTx', 'addLiquidityETH');
                                     
-                                    $tbody.append('<tr class="stepTx"><td>addLiquidityETH</td><td><i class="fa fa-refresh fa-spin"></i></td></tr>');
-                                    
-                                    $modalDiv.modal('show');
-                                    
-//return;
-                                    
+                                    objModal.show('Processing transactions');
+
+                                    ////////////////////////
                                     if (premint_preapprove) {
-                                        $tbody.find('tr.stepPreMint td:nth-child(1)').css('font-weight', 'bold');
-                                        try {
-                                            tx = await titrc.mint(to, amountTokenDesired);
-                                        } catch(e){
-                                            $tbody.find('tr.stepPreMint td:nth-child(2)').html(e.data.message);
-                                            return;
-                                        };
-                                        rc = await tx.wait();
-                                        $tbody.find('tr.stepPreMint td:nth-child(2)').html((rc.status == 1)? 'Success' : 'Failed');
-                                        if (rc.status != 1) {return;}
-                                        $tbody.find('tr.stepPreMint td:nth-child(1)').css('font-weight', 'normal');
+                                        success = await objModal.runStep('stepPreMint', async function() {return await titrc.mint(to, amountTokenDesired)});
+                                        if (!success) {return;}
                                         
-                                        $tbody.find('tr.stepPreApprove td:nth-child(1)').css('font-weight', 'bold');
-                                        try {
-                                            tx = await titrc.approve(contract.address, amountTokenDesired);
-                                        } catch(e){
-                                            $tbody.find('tr.stepPreApprove td:nth-child(2)').html(e.data.message);
-                                            return;
-                                        };
-                                        rc = await tx.wait();
-                                        $tbody.find('tr.stepPreApprove td:nth-child(2)').html((rc.status == 1)? 'Success' : 'Failed');
-                                        if (rc.status != 1) {return;}
-                                        $tbody.find('tr.stepPreApprove td:nth-child(1)').css('font-weight', 'normal');
+                                        success = await objModal.runStep('stepPreApprove', async function() {return await titrc.approve(contract.address, amountTokenDesired)});
+                                        if (!success) {return;}
+
                                     }
 
-                                    $tbody.find('tr.stepTx td:nth-child(1)').css('font-weight', 'bold');
-                                    try {                                    
-                                        tx = await contract.addLiquidityETH(
+                                    success = await objModal.runStep('stepTx', async function() {
+                                        return await contract.addLiquidityETH(
                                             token,
                                             amountTokenDesired,
                                             amountTokenMin,
@@ -205,38 +178,17 @@ class TabAdmins {
                                             to,
                                             deadline,
                                             {value: ethAmount}
-                                        );
+                                        )
+                                    });
+                                    if (!success) {return;}
 
-                                    } catch(e){
-                                        $tbody.find('tr.stepTx td:nth-child(2)').html(e.data.message);
-                                        return;
-                                    };
-                                    rc = await tx.wait();
-                                    $tbody.find('tr.stepTx td:nth-child(2)').html((rc.status == 1)? 'Success' : 'Failed');
-                                    if (rc.status != 1) {return;}
-                                    $tbody.find('tr.stepTx td:nth-child(1)').css('font-weight', 'normal');
 
                                 }
 
-
-        //                        let rc = await tx.wait(); // 0ms, as tx is already confirmed
-        //                        let event = rc.events.find(event => event.event === 'InstanceCreated');
-        //                        let instance, instancesCount;
-        //                        [instance, instancesCount] = event.args;
-        //
-        //                        objThis.contractStorageObj.setItem("CommunityCoin", instance, provider.selectedAddress);
-
-
                             }
-
-
-                            //saveImplementation(option, contract.address);
                             
                             objThis.refresh();
-                            //refreshDeployedImplementations();
-            //                console.log(provider.selectedAddress);
-            //                const signer = await ethers.provider.getSigner(provider.selectedAddress)
-                //            signer.sendTransaction(...) // what does this do?
+
                         });
 
                 }

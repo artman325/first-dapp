@@ -112,43 +112,82 @@ class TabUsers {
                 const PoolReserveTokenAddress = await CommunityStakingPool.reserveToken();
                 const WETH = new ethers.Contract(chainConstants['weth'], artifacts.getAbi("IWETH"), signer);    
                 
+                let beneficiary = $('#tabUsers .jsBeneficiary').val();
                 let payingchoise = $('#tabUsers .jsRadioPayingChoise label input[name="payingchoise"]:checked').val();
+                
                 let amount;
+                let success;
+                
+                let objModal = new modalBootstrapTransactions();
                 
                 switch (payingchoise) {
-                  case 'Reserved':
+                    case 'Reserved':
+                        objModal.addStep('stepReserved1', 'Approving Reserved Token');
+                        objModal.addStep('stepReserved2', 'Buy Liquidity And Stake');
+                        break;
+                    case 'Paying':
+                        objModal.addStep('stepPaying1', 'Approving Paying Token');
+                        objModal.addStep('stepPaying2', 'Buy Liquidity And Stake');
+                        break;
+                    case 'ETH': 
+                        if (PoolReserveTokenAddress == chainConstants['weth']) {
+                            objModal.addStep('stepETH1', 'Send eth and obtain WETH');
+                            objModal.addStep('stepETH2', 'Approving WETH Token');
+                            objModal.addStep('stepETH3', 'Buy Liquidity And Stake');
+                        } else {
+                            objModal.addStep('stepETH1', 'Send eth and buy and stake liquidity in one transaction');    
+                        }
+                        break;
+                    default:
+                        alert( "unknown paying method" );
+                }
+                objModal.show('Processing transactions');
+                               
+                switch (payingchoise) {
+                    case 'Reserved':
                         amount = $('#tabUsersReservedTokenAmount').val();
                         const Reserved_ERC20 = new ethers.Contract(PoolTradedTokenAddress, artifacts.getAbi("TestITRc"), signer); // here just need erc20::approve
-                        await Reserved_ERC20.approve(communityStakingPoolAddress, amount);
-                        //function buyLiquidityAndStake(uint256 amountTradedToken)
-                        await CommunityStakingPool["buyLiquidityAndStake(uint256)"](amount);    
-                    break;
-                  case 'Paying':
+                        
+                        success = await objModal.runStep('stepReserved1', async function() {return await Reserved_ERC20.approve(communityStakingPoolAddress, amount)});
+                        if (!success) {return;}
+                        
+                        success = await objModal.runStep('stepReserved2', async function() {return await await CommunityStakingPool["buyLiquidityAndStake(uint256,address)"](amount, beneficiary)});
+                        if (!success) {return;}
+                        
+                        break;
+                    case 'Paying':
                         let payingTokenAddress = $('#tabUsersPayingTokenAddress').val()
                         amount = $('#tabUsersPayingTokenAmount').val();
-                        
+
                         const Paying_ERC20 = new ethers.Contract(payingTokenAddress, artifacts.getAbi("TestITRc"), signer); // here just need erc20::approve
-                        await Paying_ERC20.approve(communityStakingPoolAddress, amount);
-                        //function buyLiquidityAndStake(address payingToken, uint256 amount)
-                        await CommunityStakingPool["buyLiquidityAndStake(address,uint256)"](payingTokenAddress, amount);    
-                    break;
-                  case 'ETH':
-                    amount = $('#tabUsersETHAmount').val();
-                    if (PoolReserveTokenAddress == chainConstants['weth']) {
-                        await WETH.deposit({value: amount});
-                        const WETH_ERC20 = new ethers.Contract(chainConstants['weth'], artifacts.getAbi("TestITRc"), signer); // here just need erc20::approve
-                        await WETH_ERC20.approve(communityStakingPoolAddress, amount);
-                        //function buyLiquidityAndStake(uint256 tokenBAmount) 
-                        await CommunityStakingPool["buyLiquidityAndStake(uint256)"](amount);    
-                        
-                    } else {
-                        
-                        await CommunityStakingPool["buyLiquidityAndStake()"]({value: amount});    
-                        //function buyLiquidityAndStake() public payable 
-                    }
-                    break;
-                  default:
-                    alert( "unknown paying method" );
+
+                        success = await objModal.runStep('stepPaying1', async function() {return await Paying_ERC20.approve(communityStakingPoolAddress, amount)});
+                        if (!success) {return;}
+
+                        success = await objModal.runStep('stepPaying2', async function() {return await await CommunityStakingPool["buyLiquidityAndStake(address,uint256,address)"](payingTokenAddress, amount, beneficiary)});
+                        if (!success) {return;}
+
+                        break;
+                    case 'ETH':
+                        amount = $('#tabUsersETHAmount').val();
+                        if (PoolReserveTokenAddress == chainConstants['weth']) {
+                            success = await objModal.runStep('stepETH1', async function() {return await WETH.deposit({value: amount}) });
+                            if (!success) {return;}
+
+                            const WETH_ERC20 = new ethers.Contract(chainConstants['weth'], artifacts.getAbi("TestITRc"), signer); // here just need erc20::approve
+                            success = await objModal.runStep('stepETH2', async function() {return await WETH_ERC20.approve(communityStakingPoolAddress, amount) });
+                            if (!success) {return;}
+
+                            success = await objModal.runStep('stepETH3', async function() {return await CommunityStakingPool["buyLiquidityAndStake(uint256,address)"](amount,beneficiary) });
+                            if (!success) {return;}
+
+                        } else {
+                            success = await objModal.runStep('stepETH1', async function() {return await CommunityStakingPool["buyLiquidityAndStake(beneficiary)"](beneficiary, {value: amount})});
+                            if (!success) {return;}
+                        }
+                        break;
+                    default:
+                        alert( "unknown paying method" );
                 }
             }
 

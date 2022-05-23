@@ -1,7 +1,7 @@
 
 
 function chainConstantsSetup(chainId) {
-console.log("chainConstantsSetup(chainId)");
+
     const t = {
         "0x1": {
             uniswapRouter: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
@@ -83,7 +83,7 @@ async function subscribeHandlers(provider) {
         
         balances.changedProvider(provider);
         chainConstants = chainConstantsSetup(networkId.chainId);
-console.log('chainConstants = ', chainConstants);
+
         fetchAccountData();
         tabsRefresh();    
     });

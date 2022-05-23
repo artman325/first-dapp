@@ -362,6 +362,87 @@ class ContractArtifacts {
     }
 }
 
+class modalBootstrapTransactions {
+    
+    constructor() {
+        let $modal, $modalHeader, $modalBody, $modalTBody, $modalFooter;
+        if ($('#staticModalBackdrop').length>0) {
+            $modal = $('#staticModalBackdrop');
+            $modalHeader = $('#staticModalHead');
+            $modalBody = $('#staticModalBody');
+            $modalTBody = $('#staticModalTBody');
+            $modalFooter = $('#staticModalFooter');
+
+            $modalTBody.html('');
+            $modalHeader.find('#staticBackdropLabel').html("Title");
+        } else {
+            $modalHeader = $('<div/>').addClass("modal-header").attr('id', 'staticModalHead');
+            $modalHeader.html('<h5 class="modal-title" id="staticBackdropLabel">Title</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+
+
+            $modalBody = $('<div/>').addClass("modal-body").attr('id', 'staticModalBody');
+            let $tableList = $('<table/>').addClass("table table-striped").appendTo($modalBody);
+            $modalTBody = $('<tbody/>').attr('id', 'staticModalTBody').appendTo($tableList);
+            
+            
+            $modalFooter = $('<div/>').addClass("modal-footer").attr('id', 'staticModalFooter');
+            $modalFooter.html('<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>');
+
+            let $modalDialog = $('<div/>').addClass("modal-dialog").addClass('modal-dialog-centered');
+            $modal = $('<div class="modal fade" id="staticModalBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"></div>');
+            //let $modal = $('<div/>');
+
+            let $modalContent = $('<div/>').addClass("modal-content").append($modalHeader).append($modalBody).append($modalFooter);
+
+
+        //alert($modalDialog.html());    
+            $modalContent.appendTo($modalDialog);
+        //alert($modalDialog.html());
+            $modalDialog.appendTo($modal);
+        //alert($modal.html());
+            $modal.appendTo('body');
+            
+            
+        
+        }
+        
+        this.modal = $modal;
+        this.modalHeader = $modalHeader;
+        this.modalBody = $modalBody;
+        this.modalTBody = $modalTBody;
+        this.modalFooter = $modalFooter;
+    }
+    
+    clearSteps() {
+        this.modalTBody.html('');
+    }
+    
+    addStep(selectorClassKey, title) {
+        this.modalTBody.append('<tr class="'+selectorClassKey+'"><td>'+title+'</td><td><i class="fa fa-refresh fa-spin"></i></td></tr>');
+    }
+    
+    async runStep(selectorClassKey, func) {
+        let tx,rc;
+        this.modalTBody.find('tr.'+selectorClassKey+' td:nth-child(1)').css('font-weight', 'bold');
+        try {
+            tx = await func();
+        } catch(e){
+            this.modalTBody.find('tr.'+selectorClassKey+' td:nth-child(2)').html(e.data.message);
+            return false;
+        };
+        rc = await tx.wait();
+        this.modalTBody.find('tr.'+selectorClassKey+' td:nth-child(2)').html((rc.status == 1)? 'Success' : 'Failed');
+        if (rc.status != 1) {return false;}
+        this.modalTBody.find('tr.'+selectorClassKey+' td:nth-child(1)').css('font-weight', 'normal');
+        return true;
+    }
+    
+    show(title) {
+        this.modalHeader.find('#staticBackdropLabel').html(title);
+        this.modal.modal('show')
+    }
+}
+
 function fillZeroAddress(id) {
     $(id).val('0x0000000000000000000000000000000000000000');
 }
@@ -381,57 +462,4 @@ function fillFromStorage(id, key, name, attr) {
         let t = st.getItem(name);
         $(id).val(t[attr]);
     }
-}
-
-
-function createModalBootstrap(title) {
-    let $modal, $modalHeader,$modalBody, $modalFooter;
-    if ($('#staticModalBackdrop').length>0) {
-        $modal = $('#staticModalBackdrop');
-        $modalHeader = $('#staticModalHead');
-        $modalBody = $('#staticModalBody');
-        $modalFooter = $('#staticModalFooter');
-        
-        $modalBody.html('');
-        $modalHeader.find('#staticBackdropLabel').html(title);
-    } else {
-        $modalHeader = $('<div/>').addClass("modal-header").attr('id', 'staticModalHead');
-        $modalHeader.html('<h5 class="modal-title" id="staticBackdropLabel">'+title+'</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
-
-        $modalBody = $('<div/>').addClass("modal-body").attr('id', 'staticModalBody');
-
-        $modalFooter = $('<div/>').addClass("modal-footer").attr('id', 'staticModalFooter');
-        $modalFooter.html('<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>');
-
-        let $modalDialog = $('<div/>').addClass("modal-dialog").addClass('modal-dialog-centered');
-        $modal = $('<div class="modal fade" id="staticModalBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"></div>');
-        //let $modal = $('<div/>');
-
-        let $modalContent = $('<div/>').addClass("modal-content").append($modalHeader).append($modalBody).append($modalFooter);
-
-    //alert($modalDialog.html());    
-        $modalContent.appendTo($modalDialog);
-    //alert($modalDialog.html());
-        $modalDialog.appendTo($modal);
-    //alert($modal.html());
-        $modal.appendTo('body');
-    }
-    return [$modal, $modalHeader, $modalBody, $modalFooter];
-    /*
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Understood</button>
-      </div>
-    </div>
-    */
 }
