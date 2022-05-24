@@ -8,8 +8,10 @@
 class BalancesBlock {
     
     constructor() {
+        this.userEthBalanceObj = $('.jsWalletBalance');
         this.balancesBlockObj = $('#BalancesBlock');
         this.blockNumberObj = $('#BalancesBlock .blockNumber');
+        this.blockTimeObj = $('#BalancesBlock .blockTime');
         this.blockTableObj = $('#BalancesBlock .blockTable');
         this.userStakesTableObj = $('#tabUsers .blockTable');
         this.msToRefresh = 5000;
@@ -41,6 +43,30 @@ class BalancesBlock {
         .then( async function(text){
             text = JSON.parse(text);
             objThis.CommunityCoinAbi = text.abi;
+        });
+        
+        this.balancesBlockObj.find(".jsOneYearJump").off('click').on('click', async function(){
+            
+            if (objThis.provider && objThis.provider.selectedAddress) {
+                
+                let tmp;
+                tmp = await objThis.provider.send("eth_blockNumber",[]);
+                let blockNumber = tmp.result;
+                tmp = await objThis.provider.send("eth_getBlockByNumber",[blockNumber, true]);
+                let blockTime = tmp.result.timestamp;
+                
+                //// got message "not supported" when try to run "evm_increaseTime" like this
+                // tmp = await objThis.provider.send("evm_increaseTime",[365*24*60*60]);
+                // tmp = await objThis.provider.send("evm_mine",[]);
+                // so connect directly 
+                var p = new ethers.providers.JsonRpcProvider('http://127.0.0.1:7545');
+                await p.send("evm_increaseTime",[365*24*60*60]);
+                await p.send("evm_mine",[]);
+                await objThis.refresh();
+                
+
+                
+            }
         });
         
     }
@@ -78,10 +104,11 @@ class BalancesBlock {
         return new Promise(resolve => setTimeout(resolve, time));
       }
     async _refresh() {
+
         this.isRefreshingNow = true;
         ////////////////////////////
 
-        let tmp,blockNumber, userBalance, userCoins, coinsTotalValue;
+        let tmp,blockNumber, blockTime, userBalance, userCoins, coinsTotalValue;
         
         let listPools = new ContractStorage('pools').getList();
         let stakesList=[];
@@ -91,8 +118,12 @@ class BalancesBlock {
 //        $("#navbar .jsWalletBalance").html(userBalance);
         
         if (this.provider && this.provider.selectedAddress) {
+            
+            
             tmp = await this.provider.send("eth_blockNumber",[]);
             blockNumber = tmp.result;
+            tmp = await this.provider.send("eth_getBlockByNumber",[blockNumber, true]);
+            blockTime = tmp.result.timestamp;
             
             tmp = await this.provider.send("eth_getBalance", [ethers.utils.getAddress(this.provider.selectedAddress), "latest"]);
             userBalance = ethers.utils.formatEther(tmp.result, {commify: true});
@@ -117,33 +148,46 @@ class BalancesBlock {
                         //console.log(pair);
                         let pairContract = new ethers.Contract(pairAddress, this.ERC20Abi, signer);
                         //console.log(await tmp.balanceOf(this.provider.selectedAddress));
-                        pool.uniswaplpTokens = ethers.utils.formatEther(await pairContract.balanceOf(pool.address), {commify: true,pad:6});
+                        pool.uniswaplpTokensPool = ethers.utils.formatEther(await pairContract.balanceOf(pool.address), {commify: true,pad:6});
+                        pool.uniswaplpTokensUser = ethers.utils.formatEther(await pairContract.balanceOf(this.provider.selectedAddress), {commify: true,pad:6});
+                        pool.uniswaplpTokensTotal = ethers.utils.formatEther(await pairContract.totalSupply(), {commify: true,pad:6});
                     }
                 }  
    
             }
             catch (e){
-                console.log("catch (e){");
+                console.log("catch errors");
+                console.log((e));
                 userCoins = '--';
                 coinsTotalValue = '--';
                 
             }
             $("#BalancesBlock .jsAlertBox").hide();
+            if (this.provider.chainId == '0x539') {
+                $("#BalancesBlock .blockJump").show();
+            } else {
+                $("#BalancesBlock .blockJump").hide();
+            }
         } else {
             userCoins = '--';
             userBalance = '--';
             coinsTotalValue = '--';
             blockNumber = 0;
+            blockTime = 0;
             $("#BalancesBlock .jsAlertBox").html("Wallet is not connected").show();
+            $("#BalancesBlock .blockJump").hide();
         }
         
         //synth delay
         //await this.delay(4000);
         
         let jSelector;
-        
+
         this.blockNumberObj.html('#'+parseInt(blockNumber));
-        this.blockTableObj.find(".nodelete .ethValue").html(userBalance);
+        this.blockTimeObj.html(new Date(parseInt(blockTime) * 1000).toGMTString());
+        //this.blockTableObj.find(".nodelete .ethValue").html(userBalance);
+        this.userEthBalanceObj.html(userBalance);
+console.log((userCoins));
         this.blockTableObj.find(".nodelete .coinsValue").html(userCoins);
         this.blockTableObj.find(".nodelete .coinsTotalValue").html(coinsTotalValue);
         
@@ -151,36 +195,49 @@ class BalancesBlock {
         this.blockTableObj.find("tr").not(".nodelete").remove();
         jSelector = this.blockTableObj.find(".nodelete:last");
         for (let item of listPools) {
-            jSelector.after("<tr><th>"+item.title+"</th><th>"+item.uniswaplpTokens+"</th></tr>")
+            //jSelector.after("<tr><th>"+item.title+"</th><th>"+item.uniswaplpTokensPool+"</th><th>"+item.uniswaplpTokensUser+"</th><th>"+item.uniswaplpTokensTotal+"</th></tr>")
+            
+            jSelector.after(
+                    '<tr><th rowspan="4" style="vertical-align: middle;">'+item.title+'</th></tr>'+
+                    '<tr><th>StakingPool</th><th>'+item.uniswaplpTokensPool+'</th></tr>'+
+                    '<tr><th>User</th><th>'+item.uniswaplpTokensUser+'</th></tr>'+
+                    '<tr><th>TotalSupply</th><th>'+item.uniswaplpTokensTotal+'</th></tr>'
+                    );
+            
+                
         }
         ///////////////////////////////////////
         this.userStakesTableObj.find("tr").not(".nodelete").remove();
         jSelector = this.userStakesTableObj.find(".nodelete:last");
 //                       // stakesList[item][0] = ethers.utils.formatEther(stakesList[item][0], {commify: true});
 //                       // stakesList[item][1] = (new Date(parseInt(stakesList[item][1]) * 1000)).toLocaleDateString('en-US');
+        
+        
         for (let item of stakesList) {
+            if (item.length>0) {
 //            jSelector.after("<tr><th>"+item[0]+"</th><th>"+item[1]+"</th></tr>")
-          jSelector.after("<tr><th>"+ethers.utils.formatEther((item[0].toString()), {commify: true})+"</th><th>"+(new Date(parseInt(item[1]) * 1000)).toLocaleDateString('en-US')+"</th></tr>")
-        }   
+            jSelector.after("<tr><th>"+ethers.utils.formatEther((item[0].toString()), {commify: true})+"</th><th>"+(new Date(parseInt(item[1]) * 1000)).toLocaleDateString('en-US')+"</th></tr>")
+            }   
+        }
                 
         ////////////////////////////
         this.isRefreshingNow = false;
     }
     
     async loop() {
-        console.log("---------------------- loop started ---------------------- ");
+//        console.log("---------------------- loop started ---------------------- ");
         if (this.loopRefreshingNow) {
         } else {
             this.loopRefreshingNow = true;
             while (this.loopCondition) {
-                console.log('while (this.loopCondition)');
+                //console.log('while (this.loopCondition)');
                 /* code to wait on goes here (sync or async) */    
                 await this._refresh();
                 await this.delay(this.msToRefresh)
             }
             this.loopRefreshingNow = false;
         }
-        console.log("---------------------- loop ended ---------------------- ");
+//        console.log("---------------------- loop ended ---------------------- ");
     }
 }
 

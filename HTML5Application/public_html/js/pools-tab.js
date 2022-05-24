@@ -61,9 +61,12 @@ class TabPools {
         $('#tabPools .tab-templateContent button').off("click").on("click", async function(e){
             e.preventDefault();
 
-            if (provider.selectedAddress != null) {
+            if (provider && provider.selectedAddress != null) {
+                
+                let objModal = new modalBootstrapTransactions();
+                
                 let option = $("#tabPools .selectTemplate").val();
-
+                let success;
 
 
                 const web3provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -76,66 +79,76 @@ class TabPools {
 
                 const contract = new ethers.Contract(item.address, objThis.CommunityCoinAbi, signer);
 
-        //
-        //t = new ethers.Contract("0xc778417E063141139Fce010982780140Aa0cD5Ab", ERC20Abi, signer);
-        //console.log(await t.symbol());
-        //            
-        //return;
-
-
+                    
 
                 let tx, rc, event, instance;
                 let p = [];
+                
+                if (option == 'grantRole') {
+                    objModal.addStep('stepGrantRole', 'Grant Role "'+$("#tabPoolsGrantRoleName").val().trim()+'"');
+                    objModal.show('Processing');
+                    
+                    success = await objModal.runStep('stepGrantRole', async function() {
+                        return await contract.grantRole(
+                            ethers.utils.formatBytes32String(
+                                $("#tabPoolsGrantRoleName").val().trim()
+                            ),
+                            $("#tabPoolsGrantRoleAddress").val()
+                        );
+                    });
+                    if (!success) {return;}
+                          
+                
+                } else {
+                    if (option == 'produce') {
 
-                if (option == 'produce') {
+                        p.push($("#tabPoolsReserveToken").val());
+                        p.push($("#tabPoolsTradedToken").val());
+                        p.push($("#tabPoolsDuration").val());
+                        p.push([]);//p.push($("#tabPoolsDonations").val());
+                        p.push($("#tabPoolsReserveTokenClaimFraction").val());
+                        p.push($("#tabPoolsTradedTokenClaimFraction").val());
+                        p.push($("#tabPoolsLpClaimFraction").val());
+                        p.push($("#tabPoolsNumerator").val());
+                        p.push($("#tabPoolsDenominator").val());
 
-                    p.push($("#tabPoolsReserveToken").val());
-                    p.push($("#tabPoolsTradedToken").val());
-                    p.push($("#tabPoolsDuration").val());
-                    p.push([]);//p.push($("#tabPoolsDonations").val());
-                    p.push($("#tabPoolsReserveTokenClaimFraction").val());
-                    p.push($("#tabPoolsTradedTokenClaimFraction").val());
-                    p.push($("#tabPoolsLpClaimFraction").val());
-                    p.push($("#tabPoolsNumerator").val());
-                    p.push($("#tabPoolsDenominator").val());
+                        tx = await contract["produce(address,address,uint64,(address,uint256)[],uint64,uint64,uint64,uint64,uint64)"](...p);
 
-                    tx = await contract["produce(address,address,uint64,(address,uint256)[],uint64,uint64,uint64,uint64,uint64)"](...p);
+                        rc = await tx.wait(); // 0ms, as tx is already confirmed
+                        event = rc.events.find(event => event.event === 'InstanceCreated');
 
-                    rc = await tx.wait(); // 0ms, as tx is already confirmed
-                    event = rc.events.find(event => event.event === 'InstanceCreated');
+                    } else if (option == 'produce-erc20') {
 
-                } else if (option == 'produce-erc20') {
+                        p.push($("#tabPoolsErc20TokenErc20").val());
+                        p.push($("#tabPoolsErc20Duration").val());
+                        p.push([]);//p.push($("#tabPoolsDonations").val());
+                        p.push($("#tabPoolsErc20Numerator").val());
+                        p.push($("#tabPoolsErc20Denominator").val());
 
-                    p.push($("#tabPoolsErc20TokenErc20").val());
-                    p.push($("#tabPoolsErc20Duration").val());
-                    p.push([]);//p.push($("#tabPoolsDonations").val());
-                    p.push($("#tabPoolsErc20Numerator").val());
-                    p.push($("#tabPoolsErc20Denominator").val());
+                        tx = await contract["produce(address,uint64,(address,uint256)[],uint64,uint64)"](...p);
 
-                    tx = await contract["produce(address,uint64,(address,uint256)[],uint64,uint64)"](...p);
+                        rc = await tx.wait(); // 0ms, as tx is already confirmed
+                        event = rc.events.find(event => event.event === 'InstanceErc20Created');
 
-                    rc = await tx.wait(); // 0ms, as tx is already confirmed
-                    event = rc.events.find(event => event.event === 'InstanceErc20Created');
+                    }
 
+            //                emit InstanceCreated(reserveToken, tradedToken, instance);
+            //                emit InstanceErc20Created(tokenErc20, instance);
+
+
+                    let t, symbols;
+                    symbols=[];
+
+                    for(var i=0; i<event.args.length-1; i++) {
+                        t = new ethers.Contract(event.args[i], objThis.ERC20Abi, signer);
+                        symbols.push(await t.symbol());
+
+                    }
+
+                    instance = event.args[event.args.length-1];
+
+                    objThis.contractStorageObj.setItem(instance, symbols.join('-'), instance, provider.selectedAddress);
                 }
-
-        //                emit InstanceCreated(reserveToken, tradedToken, instance);
-        //                emit InstanceErc20Created(tokenErc20, instance);
-
-
-                let t, symbols;
-                symbols=[];
-
-                for(var i=0; i<event.args.length-1; i++) {
-                    t = new ethers.Contract(event.args[i], objThis.ERC20Abi, signer);
-                    symbols.push(await t.symbol());
-
-                }
-
-                instance = event.args[event.args.length-1];
-
-                objThis.contractStorageObj.setItem(instance, symbols.join('-'), instance, provider.selectedAddress);
-
             }   
             objThis.refresh();
 

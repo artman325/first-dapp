@@ -63,17 +63,24 @@
     </nav>
     <div id="BalancesBlock" class="balanceBox">
         <div class="wrapBlockNumber">
-            <span class="blockNumber">12345</span>    
+            <div class="blockNumber">-</div>
+            <div class="blockTime" >-</div>
+            <div class="blockJump" >
+                <a href="javascript:void(0)" class="jsOneYearJump">[One year jump]</a>
+            </div>
         </div>
 
-        <table class="blockTable table table-striped">
+        <table class="blockTable table table-bordered">
             <thead></thead>
             <tbody>
-            <tr class="nodelete"><th colspan="2" style="text-align:center">User Balances</th></tr>
-            <tr class="nodelete"><th>ETH</th><th class="ethValue">---</th></tr>
-            <tr class="nodelete"><th>CCoins</th><th class="coinsValue">---</th></tr>
-            <tr class="nodelete"><th colspan="2" style="text-align:center">TotalSupply</th></tr>
-            <tr class="nodelete"><th>CCoins</th><th class="coinsTotalValue">---</th></tr>
+                <tr class="nodelete"><th colspan="3" style="text-align:center">Balances</th></tr>
+                <tr class="nodelete"><th rowspan="3" style="vertical-align: middle;">CCoins</th></tr>    
+                <tr class="nodelete"><th>User</th><th class="coinsValue">---</th></tr>    
+                <tr class="nodelete"><th>TotalSupply</th><th class="coinsTotalValue">---</th></tr>    
+                
+                <tr class="nodelete"><th colspan="3" style="text-align:center">Uniswap LP</th></tr>
+            
+            
             </tbody>
         </table>
         <div class="alert-warning jsAlertBox" style="display:none"></div>
@@ -326,6 +333,7 @@
                                 <option value="pleasechoose">-please choose-</option>
                                 <option value="produce">produce</option>
                                 <option value="produce-erc20">produce erc20</option>
+                                <option value="grantRole">grant role</option>
                               </select>
                             </div>
                             <div class="tab-templateContent tab-pleasechoose">
@@ -419,8 +427,33 @@
                                     
                                     <button type="submit" class="btn btn-primary">Submit</button>    
                                 </form>
-                                <div class="text-center">please choose template in select above</div>
+
                             </div>
+                            <div class="tab-templateContent tab-grantRole">
+                                <form>    
+                                    <div class="marginBottom40">
+                                        <h5>Grant Role to user (if community is address(0))</h5>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsGrantRoleName">Role name</label>
+                                        <input type="text" class="form-control jsPoolsGrantRoleName" id="tabPoolsGrantRoleName" placeholder="address">
+                                        <small class="form-text text-muted">
+                                            fill <a href="javascript:$('#tabPoolsGrantRoleName').val('redeem');">"redeem"</a>,
+                                            <a href="javascript:$('#tabPoolsGrantRoleName').val('circulate');">"circulate"</a>,
+                                        </small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tabPoolsGrantRoleAddress">User address</label>
+                                        <input type="text" class="form-control jsPoolsGrantRoleAddress" id="tabPoolsGrantRoleAddress" placeholder="address">
+                                        <small class="form-text text-muted">
+                                            <a href="javascript:fillCurrentAddress('#tabPoolsGrantRoleAddress')">fill msgSender</a>
+                                        </small>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">Submit</button>    
+                                </form>
+                            </div>
+                            
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -444,13 +477,19 @@
                               <select id="Users-selectTemplate" class="selectTemplate form-control">
                                 <option value="pleasechoose">-please choose-</option>
                                 <option value="buyandstake">Buy And Stake Liquidity</option>
+                                <option value="redeem">Redeem</option>
+                                <option value="redeemAndRemoveLiquidity">Redeem and Remove Liquidity</option>
+                                <option value="unstake">Unstake</option>
                               </select>
                             </div>
+                            
+                            
                             <div class="tab-templateContent tab-pleasechoose">
                                 <div class="text-center">please choose template in select above</div>
                             </div>
                             
                             <div class="tab-templateContent tab-buyandstake">
+                                
                                 <div class="form-group">
                                     <label> Enter community staking pool address or choose in select </label>
                                     <div class="form-row">
@@ -464,7 +503,6 @@
                                         </div>   
                                     </div>
                                 </div>
-                                    
                                 
                                 <div class="form-group">    
                                     <div class="btn-group btn-group-toggle jsRadioPayingChoise" data-toggle="buttons">
@@ -546,11 +584,41 @@
                                     
                                 </div>
                                 
-                                <button type="submit" class="btn btn-primary jsBtnStake">Buy and Stake liquidity</button>
+                                <button type="submit" class="btn btn-primary">Buy and Stake liquidity</button>
                                   
                                   
 
 
+                            </div>
+                            <div class="tab-templateContent tab-unstake">
+                                <div class="form-group">
+                                    <label for="tabUsersUnstakeAmount">Amount to unstake</label>
+                                    <input type="text" class="form-control jsUnstakeAmount" id="tabUsersUnstakeAmount" placeholder="uint256">
+                                    <small class="form-text text-muted">
+                                        <a href="javascript:fillOneEth('#tabUsersUnstakeAmount')">fill 1e18</a>
+                                    </small>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Unstake</button>
+                            </div>
+                            <div class="tab-templateContent tab-redeem">
+                                <div class="form-group">
+                                    <label for="tabUsersRedeemAmount">Amount to redeem</label>
+                                    <input type="text" class="form-control jsRedeemAmount" id="tabUsersRedeemAmount" placeholder="uint256">
+                                    <small class="form-text text-muted">
+                                        <a href="javascript:fillOneEth('#tabUsersRedeemAmount')">fill 1e18</a>
+                                    </small>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Redeem</button>
+                            </div>
+                            <div class="tab-templateContent tab-redeemAndRemoveLiquidity">
+                                <div class="form-group">
+                                    <label for="tabUsersRedeemAndRemoveLiquidityAmount">Amount to redeem and remove liquidity</label>
+                                    <input type="text" class="form-control jsRedeemAndRemoveLiquidityAmount" id="tabUsersRedeemAndRemoveLiquidityAmount" placeholder="uint256">
+                                    <small class="form-text text-muted">
+                                        <a href="javascript:fillOneEth('#tabUsersRedeemAndRemoveLiquidityAmount')">fill 1e18</a>
+                                    </small>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Redeem and Remove Liquidity</button>
                             </div>
                             
                         </div>

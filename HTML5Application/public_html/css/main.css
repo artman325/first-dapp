@@ -33,8 +33,9 @@
     
     */
     float:right; 
-    width:400px; 
+    width:500px; 
     height:200px; 
+    margin-left:20px; 
     margin-right:20px; 
     text-align: center;
     
@@ -44,8 +45,24 @@
 }
 .balanceBox .wrapBlockNumber .blockNumber {
      position:relative; 
-     margin-left:320px;
+     margin-left:415px;
 }
+.balanceBox .wrapBlockNumber .blockTime {
+    position: relative;
+    margin-left: 326px;
+    margin-top: -8px;
+    font-size: 12px;
+}
+.balanceBox .wrapBlockNumber .blockJump {
+    position: relative;
+    margin-right: 400px;
+    margin-top: -20px;
+    font-size: 12px;
+}
+.blockTable tr th {
+    padding:0.25rem;
+}
+
 .blockTable tr th:nth-child(2) {
     text-align: right;
 }
