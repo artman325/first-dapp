@@ -59,10 +59,14 @@
     margin-top: -20px;
     font-size: 12px;
 }
-.blockTable tr th {
-    padding:0.25rem;
+.blockTable tr th, .blockTable tr td {
+    padding:0.09rem;
 }
-
+/*
+.blockTable tr td {
+    text-align: left;
+}
+*/
 .blockTable tr th:nth-child(2) {
     text-align: right;
 }

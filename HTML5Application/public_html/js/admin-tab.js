@@ -86,10 +86,8 @@ class TabAdmins {
                                         contract = await factory.deploy();
                                     }
                                 } catch(e){
-                                    let $modalDiv,$modalBody;
-                                    [$modalDiv, /*header*/, $modalBody,/*footer*/] = createModalBootstrap((option == "TestITRc") ? 'ITRc (for testing)' : 'Creation instance' );
-                                    $modalBody.html(e.data.message);
-                                    $modalDiv.modal('show');
+                                    console.log(e);
+                                    
                                     return;
                                 };
                                 
@@ -138,16 +136,24 @@ class TabAdmins {
                                     let objModal = new modalBootstrapTransactions();
                                     
                                     contract = new ethers.Contract(chainConstants['uniswapRouter'], abi, signer);    
-
+                                                
+                                
+            
                                     let token = $("#tabAdminAddLiquidityTokenA").val();
                                     let amountTokenDesired = $("#tabAdminAddLiquidityTokenAAmount").val();
                                     let amountTokenMin = 0;
                                     let amountETHMin = 0;
                                     let to = provider.selectedAddress;
-                                    let deadline = parseInt(Math.floor(Date.now()/1000))+parseInt(30*24*60*60); // 30 days
+                                    
+                                    let tmp;
+                                    tmp = await provider.send("eth_blockNumber",[]);
+                                    tmp = await provider.send("eth_getBlockByNumber",[tmp.result, true]);
+                                    let blockTime = tmp.result.timestamp;
+                                    let deadline = parseInt(blockTime)+parseInt(10*365*24*60*60); // 10years
+                                    
                                     let ethAmount = $("#tabAdminAddLiquidityTokenAAmount").val();
 
-                                    let tmp = objThis.contractStorageObj.getItem('TestITRc');
+                                    tmp = objThis.contractStorageObj.getItem('TestITRc');
                                     let premint_preapprove = (tmp.address && tmp.address == token);
                                     let titrc = new ethers.Contract(token, artifacts.getAbi("TestITRc"), signer);
  

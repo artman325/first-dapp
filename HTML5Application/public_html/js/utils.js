@@ -15,7 +15,7 @@ class BalancesBlock {
         this.blockTableObj = $('#BalancesBlock .blockTable');
         this.userStakesTableObj = $('#tabUsers .blockTable');
         this.msToRefresh = 5000;
-        this.provider = null;
+        this.provider = provider;
         this.loopCondition = true;
         
         this.loopRefreshingNow = false;
@@ -23,7 +23,6 @@ class BalancesBlock {
         
         this.loop();
         
-        this.qqq = 1111;
         var objThis = this;
         fetch('artifacts/TestITRc.json')
         .then(response => response.text())
@@ -72,7 +71,7 @@ class BalancesBlock {
     }
     
     async changedProvider(provider) {
-        //console.log("BalancesBlock::changedProvider");
+        console.log("BalancesBlock::changedProvider");
         this.provider = provider;
         //console.log('selectedAddress=', provider.selectedAddress);
         await this.refresh();
@@ -129,20 +128,22 @@ class BalancesBlock {
             userBalance = ethers.utils.formatEther(tmp.result, {commify: true});
             
             try {
-             
+                const signer = (new ethers.providers.Web3Provider(window.ethereum, "any")).getSigner();
+
+                tmp = new ethers.Contract(communityCoinItem.address, this.CommunityCoinAbi, signer);
+                userCoins = ethers.utils.formatEther(await tmp.balanceOf(this.provider.selectedAddress), {commify: true});
+                coinsTotalValue = ethers.utils.formatEther(await tmp.totalSupply(), {commify: true});
+                stakesList = await tmp.viewLockedWalletTokensList(this.provider.selectedAddress);
+                
                 if (listPools.length>0) {
 
-                    const signer = (new ethers.providers.Web3Provider(window.ethereum, "any")).getSigner();
-
-                    tmp = new ethers.Contract(communityCoinItem.address, this.CommunityCoinAbi, signer);
-                    userCoins = ethers.utils.formatEther(await tmp.balanceOf(this.provider.selectedAddress), {commify: true});
-                    coinsTotalValue = ethers.utils.formatEther(await tmp.totalSupply(), {commify: true});
                     
-                    stakesList = await tmp.viewLockedWalletTokensList(this.provider.selectedAddress);
 
                     for (let pool of listPools) {
 
                         tmp = new ethers.Contract(pool.address, this.CommunityStakingPoolAbi, signer);
+                        let token0 = await tmp.tradedToken();
+                        let token1 = await tmp.reserveToken();
                         //item.totalbalance 
                         let pairAddress = await tmp.uniswapV2Pair();
                         //console.log(pair);
@@ -151,6 +152,19 @@ class BalancesBlock {
                         pool.uniswaplpTokensPool = ethers.utils.formatEther(await pairContract.balanceOf(pool.address), {commify: true,pad:6});
                         pool.uniswaplpTokensUser = ethers.utils.formatEther(await pairContract.balanceOf(this.provider.selectedAddress), {commify: true,pad:6});
                         pool.uniswaplpTokensTotal = ethers.utils.formatEther(await pairContract.totalSupply(), {commify: true,pad:6});
+                        
+                        
+                        let token0Contract = new ethers.Contract(token0, this.ERC20Abi, signer);
+                        let token1Contract = new ethers.Contract(token1, this.ERC20Abi, signer);
+                        pool.token0User = ethers.utils.formatEther(await token0Contract.balanceOf(this.provider.selectedAddress), {commify: true,pad:6});
+                        pool.token0Total = ethers.utils.formatEther(await token0Contract.totalSupply(), {commify: true,pad:6});
+                        pool.token0Symbol = await token0Contract.symbol();
+                        pool.token1User = ethers.utils.formatEther(await token1Contract.balanceOf(this.provider.selectedAddress), {commify: true,pad:6});
+                        pool.token1Total = ethers.utils.formatEther(await token1Contract.totalSupply(), {commify: true,pad:6});
+                        pool.token1Symbol = await token1Contract.symbol();
+                        
+                        
+                        
                     }
                 }  
    
@@ -162,6 +176,7 @@ class BalancesBlock {
                 coinsTotalValue = '--';
                 
             }
+
             $("#BalancesBlock .jsAlertBox").hide();
             if (this.provider.chainId == '0x539') {
                 $("#BalancesBlock .blockJump").show();
@@ -187,9 +202,11 @@ class BalancesBlock {
         this.blockTimeObj.html(new Date(parseInt(blockTime) * 1000).toGMTString());
         //this.blockTableObj.find(".nodelete .ethValue").html(userBalance);
         this.userEthBalanceObj.html(userBalance);
-console.log((userCoins));
+console.log((userBalance));
         this.blockTableObj.find(".nodelete .coinsValue").html(userCoins);
         this.blockTableObj.find(".nodelete .coinsTotalValue").html(coinsTotalValue);
+        
+        let tmpObj = this.blockTableObj.find(".nodelete .coinsTotalValue").parent('tr');
         
         
         this.blockTableObj.find("tr").not(".nodelete").remove();
@@ -198,13 +215,21 @@ console.log((userCoins));
             //jSelector.after("<tr><th>"+item.title+"</th><th>"+item.uniswaplpTokensPool+"</th><th>"+item.uniswaplpTokensUser+"</th><th>"+item.uniswaplpTokensTotal+"</th></tr>")
             
             jSelector.after(
-                    '<tr><th rowspan="4" style="vertical-align: middle;">'+item.title+'</th></tr>'+
-                    '<tr><th>StakingPool</th><th>'+item.uniswaplpTokensPool+'</th></tr>'+
-                    '<tr><th>User</th><th>'+item.uniswaplpTokensUser+'</th></tr>'+
-                    '<tr><th>TotalSupply</th><th>'+item.uniswaplpTokensTotal+'</th></tr>'
-                    );
-            
-                
+                '<tr><th rowspan="4" style="vertical-align: middle;">'+item.title+'</th></tr>'+
+                '<tr><th>StakingPool</th><td>'+item.uniswaplpTokensPool+'</td></tr>'+
+                '<tr><th>User</th><td>'+item.uniswaplpTokensUser+'</td></tr>'+
+                '<tr><th>TotalSupply</th><td>'+item.uniswaplpTokensTotal+'</td></tr>'
+                );
+            tmpObj.after(
+                '<tr><th rowspan="3" style="vertical-align: middle;">'+item.token0Symbol+'</th></tr>'+
+                '<tr><th>User</th><td>'+item.token0User+'</td></tr>'+
+                '<tr><th>TotalSupply</th><td>'+item.token0Total+'</td></tr>'
+                );
+            tmpObj.after(
+                '<tr><th rowspan="3" style="vertical-align: middle;">'+item.token1Symbol+'</th></tr>'+
+                '<tr><th>User</th><td>'+item.token1User+'</td></tr>'+
+                '<tr><th>TotalSupply</th><td>'+item.token1Total+'</td></tr>'
+                );    
         }
         ///////////////////////////////////////
         this.userStakesTableObj.find("tr").not(".nodelete").remove();
