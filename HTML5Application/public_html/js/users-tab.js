@@ -244,7 +244,24 @@ class TabUsers {
                         if (!success) {return;}
                                 
                         break;
+                    case 'simulateRedeemAndRemoveLiquidity':
+                        amount = $('#tabUsersSimulateRedeemAndRemoveLiquidityAmount').val();
+                        try {
+                        let t = await CommunityCoin.simulateRedeemAndRemoveLiquidity(
+                            provider.selectedAddress, //address account,
+                            amount, //amountLP,
+                            [],//address[] memory preferredInstances,
+                            [[chainConstants['weth']]] //address[][] memory swapPaths
+                        
+                            );
                     
+                            alert("You will obtain " + ethers.utils.formatEther(t[1], {commify: true}) + ' in WETH'); 
+                        }
+                        catch (e) {
+                            alert("error happens");
+                            console.log(e);
+                        }
+                        break;
                     default:
                         alert( "unknown option" );
                 }

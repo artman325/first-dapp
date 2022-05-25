@@ -480,6 +480,7 @@
                                 <option value="redeem">Redeem</option>
                                 <option value="redeemAndRemoveLiquidity">Redeem and Remove Liquidity</option>
                                 <option value="unstake">Unstake</option>
+                                <option value="simulateRedeemAndRemoveLiquidity">Simulate "Redeem And Remove Liquidity"</option>
                               </select>
                             </div>
                             
@@ -620,6 +621,21 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary">Redeem and Remove Liquidity</button>
                             </div>
+                            
+                            <div class="tab-templateContent tab-simulateRedeemAndRemoveLiquidity">
+                                <div class="form-group">
+                                    <label for="tabUsersSimulateRedeemAndRemoveLiquidityAmount">Amount to redeem and remove liquidity</label>
+                                    <input type="text" class="form-control jsSimulateRedeemAndRemoveLiquidityAmount" id="tabUsersSimulateRedeemAndRemoveLiquidityAmount" placeholder="uint256">
+                                    
+                                    <small class="form-text text-muted">
+                                        <a href="javascript:fillOneEth('#tabUsersSimulateRedeemAndRemoveLiquidityAmount')">fill 1e18</a>.
+                                        we will try to swap all tokens to WETH
+                                    </small>
+                                    
+                                </div>
+                                <button type="submit" class="btn btn-primary">Simulation "Redeem and Remove Liquidity"</button>
+                            </div>
+                            
                             
                         </div>
                     </div>

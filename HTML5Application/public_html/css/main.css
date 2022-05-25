@@ -44,8 +44,10 @@
     position:absolute;
 }
 .balanceBox .wrapBlockNumber .blockNumber {
-     position:relative; 
-     margin-left:415px;
+    position:relative; 
+    font-size: 11px;
+    margin-left: 440px;
+    margin-bottom: 3px;
 }
 .balanceBox .wrapBlockNumber .blockTime {
     position: relative;
