@@ -311,6 +311,9 @@ class ContractStorage {
 
         localStorage.setItem(this._getChainKey(), JSON.stringify(data));
     }
+    saveChain(data) {
+        localStorage.setItem(this._getChainKey(), JSON.stringify(data));
+    }
     getItem(name) {
         let address, creator;
         let list = this.getList();
