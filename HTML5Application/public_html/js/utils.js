@@ -389,17 +389,12 @@ class ContractStorage {
             tbody.append('<tr><th>There are no data</th></tr>');
         }
     }
-    
-  
 }
 
 class ContractArtifacts {
     constructor() {
-        
-        
         this.data = {};
         this.fetchData();
-        
     }
     
     fetchData() {

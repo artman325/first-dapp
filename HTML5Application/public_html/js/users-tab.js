@@ -269,38 +269,7 @@ class TabUsers {
 
             obj.contractStorageObj.refresh();
         });
-        /*
-        $('#tabUsers .tab-form-stake .jsApprove').off("click").on("click", async function(e){
-            e.preventDefault();
-            
-            if (provider.selectedAddress != null) {
-                let addr = ($('#tabUsersPayingTokenAddress').val()).trim();
-                let amount = $('#tabUsersPayingTokenAmount').val();
-                
-                let testitrc = (new ContractStorage('deployedImplementations')).getItem('TestITRc');
-                if (addr == '') {
-                    alert('Paying token address can not be empty');
-                } else {
-                    
-                    if ([
-                        //testitrc.address,
-                        '0x0000000000000000000000000000000000000000'
-                    ].indexOf(addr) === -1) {
-                        if (window.confirm("Are you sure you want to approve "+ ethers.utils.formatEther(amount, {commify: true})+" ETH to "+addr+"?")) {
-
-                            await testitrc.mint(provider.selectedAddress, amount);
-                            await testitrc.approve(addr, amount);
-                            
-                        }
-                    } {
-                        alert("There no need approve action if Paying token are ZERO address");
-                    }
-                
-                }
-                
-            }
-        });
-        */
+        
     }
 }
 

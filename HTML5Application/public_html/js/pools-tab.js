@@ -34,8 +34,6 @@ class TabPools {
         });
     }
     refresh() {
-        console.log("TabPools::i am here");
-        
         this.contractStorageObj.refresh();
     }
     setupHandlers() {

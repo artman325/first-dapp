@@ -21,7 +21,6 @@ class TabFactories {
         };
     }
     refresh() {
-        console.log("TabFactories::i am here");
         fetchAccountData();
         this.contractStorageObj.refresh();
         
@@ -58,8 +57,6 @@ class TabFactories {
 
             for (let item of list) {
                 index = (constructorParams.keys).indexOf(item.name);
-                console.log(item.name);
-                console.log(index);
                 if (index !== -1) {
                     $("#tabFactories ."+(constructorParams.inputClasses)[index]).val(item.address);
                 }
@@ -110,10 +107,7 @@ class TabFactories {
                             //saveImplementation(option, contract.address);
                             
                             objThis.refresh();
-                            //refreshDeployedImplementations();
-            //                console.log(provider.selectedAddress);
-            //                const signer = await ethers.provider.getSigner(provider.selectedAddress)
-                //            signer.sendTransaction(...) // what does this do?
+
                         });
 
                 }

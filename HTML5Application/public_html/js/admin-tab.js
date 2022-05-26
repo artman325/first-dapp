@@ -69,9 +69,9 @@ class TabAdmins {
                                     ((["UniswapV2Factory", "UniswapV2Router02"]).indexOf(option) !== -1) ||
                                     window.confirm("impementation already deployed. are you sure to replace exists?")
                                 )
-                            )) 
+                            )
+                        ) 
                     {
-
 
                         fetch('artifacts/'+option+'.json')
                             .then(response => response.text())
@@ -95,10 +95,12 @@ class TabAdmins {
                                     // The factory we use for deploying contracts
                                     let factory = new ethers.ContractFactory(abi, bytecode, signer)
                                     let p = [];
+                                    let itemName = option;
                                     try {  
                                         if (option == "TestITRc") {
                                             p.push('ITRc for Testing');
                                             p.push('TITRc');
+                                            itemName = 'ITRc';
                                             contract = await factory.deploy(...p);
                                         } else {
                                             contract = await factory.deploy();
@@ -109,27 +111,14 @@ class TabAdmins {
                                         return;
                                     };
 
-                                    objThis.contractStorageObj.setItem(option, option, contract.address, provider.selectedAddress);
+                                    objThis.contractStorageObj.setItem(itemName, option, contract.address, provider.selectedAddress);
 
                                 } else {
 
                                     // or attach exists and call method 
                                     if (option == 'UniswapV2Factory') {
 
-            /*                          
-            uniswapRouter= 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
-            uniswapRouterFactory= 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f
-            let q = new ethers.Contract("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", abi, signer);    
-            await q.createPair(
-                "0x895f20789FdfD420496A806Eb30c30082F2e3727",
-                "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-                {gasLimit: 11000000}
-            );
-            */
-
                                         contract = new ethers.Contract(chainConstants['uniswapRouterFactory'], abi, signer);    
-
-                                        //let tttt = await contract.allPairsLength();
 
                                         try {  
                                             tx = await contract.createPair(
@@ -149,15 +138,13 @@ class TabAdmins {
                                         let instance;
                                         [,,instance,] = event.args;
 
-                                        objThis.contractStorageObj.setItem(option, "UniswapPair TestITRc-WETH", instance, provider.selectedAddress);
+                                        objThis.contractStorageObj.setItem(option, "UniswapPair ITRc-WETH", instance, provider.selectedAddress);
 
                                     } else if (option == 'UniswapV2Router02') {
 
                                         let objModal = new modalBootstrapTransactions();
 
                                         contract = new ethers.Contract(chainConstants['uniswapRouter'], abi, signer);    
-
-
 
                                         let token = $("#tabAdminAddLiquidityTokenA").val();
                                         let amountTokenDesired = $("#tabAdminAddLiquidityTokenAAmount").val();
@@ -173,7 +160,7 @@ class TabAdmins {
 
                                         let ethAmount = $("#tabAdminAddLiquidityTokenAAmount").val();
 
-                                        tmp = objThis.contractStorageObj.getItem('TestITRc');
+                                        tmp = objThis.contractStorageObj.getItem('ITRc');
                                         let premint_preapprove = (tmp.address && tmp.address == token);
                                         let titrc = new ethers.Contract(token, artifacts.getAbi("TestITRc"), signer);
 
