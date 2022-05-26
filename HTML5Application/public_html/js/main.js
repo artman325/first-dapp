@@ -26,7 +26,7 @@ function chainConstantsSetup(chainId) {
         //matic
         "0x89": {
             // QuickSwap https://github.com/QuickSwap/quickswap-core
-            uniswapRouter: "xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
+            uniswapRouter: "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
             uniswapRouterFactory: "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
             weth: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
             importUrl: 'https://gist.githubusercontent.com/artman325/fcb6f4f9ed50e2bc39fd2595613b920b/raw/c27229269013c685a099531b171efe9e95c9132c/settings-app-matic.json'
@@ -38,7 +38,7 @@ function chainConstantsSetup(chainId) {
             uniswapRouter: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
             uniswapRouterFactory: "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
             weth: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", // Wrapped BNB (WBNB)
-            importUrl: 'https://gist.githubusercontent.com/artman325/d5af273b2d0b73945dd8e7e1bdd5b4cd/raw/2da9064156008090f9dcc5ab2a941bb7a5b86311/settings-app-binance.json'
+            importUrl: 'https://gist.githubusercontent.com/artman325/d5af273b2d0b73945dd8e7e1bdd5b4cd/raw/7b98c2f010335fda7135535839364d5d2385565c/settings-app-binance.json'
         },
         
         // for local tests 
